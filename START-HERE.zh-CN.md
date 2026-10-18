@@ -62,6 +62,6 @@ $parts = @(Get-ChildItem -LiteralPath 'D:\Takeout' -Filter '*.zip' -File | Sort-
 ## 下一步验证
 
 临时实例中的匹配、缺失、回收站三种状态已验证；真实用户导出数据和大规模性能仍待试用。
-完整使用边界、测试入口和发布门槛见 [英文技术说明](docs/takeout-audit.md)。
+完整使用边界、测试入口和发布门槛见 [英文技术说明](https://github.com/asnlsxx/takeout-audit/blob/main/docs/takeout-audit.md)。
 独立程序没有上传、删除或自更新命令。开发包是否已公开、真实服务测试是否通过，
 以仓库中的验证记录和实际 CI 运行结果为准；不能把测试配置完成当作联调通过。

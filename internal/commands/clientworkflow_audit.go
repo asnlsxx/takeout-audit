@@ -19,7 +19,7 @@ func auditTakeoutCommand() *cli.Command {
 		Name:      "audit-takeout",
 		Usage:     "Audit every Takeout ZIP/directory entry against Immich catalog checksums; never upload or delete",
 		ArgsUsage: "ZIP|DIR [ZIP|DIR ...]",
-		Description: "Experimental, contract-tested for stable Immich 3.2.x; live-server validation is pending. " +
+		Description: "Experimental, contract-tested for stable Immich 3.2.x; disposable Immich 3.2.0 lifecycle verified in CI. " +
 			"Reads all supplied inputs without extraction. Writes ledger.jsonl, media.csv and summary.json in a NEW directory. " +
 			"Does not verify Google export completeness, metadata, external libraries or current server file integrity. " +
 			"API key needs user.read and asset.upload. No asset upload is performed. Exit 0: scoped audit complete; 1: differences/attention; 2: incomplete (including inventory-only).",

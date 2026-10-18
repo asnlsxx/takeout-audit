@@ -66,8 +66,8 @@ func AuditTakeoutRemote(ctx context.Context, c *client.Client, report *takeoutau
 	}
 	v := *version.JSON200
 	report.Summary.ServerVersion = client.FormatServerVersion(v)
-	// The local contract suite covers 3.2.x only. This is not a claim of live
-	// validation; the report explicitly records that release gate as pending.
+	// Contracts cover 3.2.x; a disposable 3.2.0 lifecycle is verified in CI.
+	// This does not claim live testing of every patch or private user exports.
 	if v.Major != 3 || v.Minor != 2 || v.Patch < 0 || v.Prerelease != nil {
 		fail("unsupported_version_requires_stable_3.2.x")
 		return

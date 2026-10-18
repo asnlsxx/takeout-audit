@@ -4,7 +4,9 @@ Experimental extension based on `dhcgn/immich-admin-cli` commit
 `5514efda26ba46afc3bb2d60a15ff723c3549992` (MIT). The API spec was refreshed
 from upstream on 2026-10-18; its info
 version is `3.3.0-rc.0`. Runtime audit compatibility is intentionally restricted
-to stable **3.2.x**, covered by mocked contracts, not a completed live test.
+to stable **3.2.x**. Mock contracts and a disposable real **3.2.0** lifecycle
+[passed](https://github.com/asnlsxx/takeout-audit/actions/runs/39115445636).
+Other patch versions and private user exports have not been individually tested.
 
 ## Run
 

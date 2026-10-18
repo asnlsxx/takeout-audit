@@ -16,6 +16,13 @@ verification, resumable runs or proof of complete Google export. A catalog match
 does not verify current server file bytes. No upload, deletion or self-update
 commands are exposed by the dedicated binary.
 
-This is a controlled-trial alpha, not a production backup guarantee. Consult
-the repository validation record and exact CI run for real-server and platform
-test status. Artifacts include MIT attribution and SHA256 checksums.
+Verification: 287 local passing test events (including subtests), native
+Windows/Linux/macOS CI, bounded malformed-ZIP fuzzing, no govulncheck findings,
+and a disposable real Immich 3.2.0 test: one matched, one trashed and one absent
+content group, one extra source copy, restricted query key, unchanged asset
+state and fixture cleanup. [Initial successful lifecycle and platform run](https://github.com/asnlsxx/takeout-audit/actions/runs/39115445636).
+
+This is a controlled-trial alpha, not a production backup guarantee. Real-user
+large exports and other server patches still need trials. Publication requires
+successful CI on the release's exact commit. Artifacts include MIT attribution,
+English/Chinese instructions and SHA256 checksums.

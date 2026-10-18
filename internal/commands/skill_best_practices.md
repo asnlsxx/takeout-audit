@@ -15,7 +15,8 @@ takeout-audit --inventory-only --out inventory2 takeout-001.zip takeout-002.zip
 media has not been checked remotely. Online mode accepts stable 3.2.x only;
 the API key needs `user.read` and `asset.upload`, but a transport allowlist
 permits only account/version reads and POST `/assets/bulk-upload-check`.
-Contract tests use a mock server; live-server validation is still pending.
+Mock contracts and a disposable real Immich 3.2.0 lifecycle passed. Other patch
+versions and private Takeout exports have not been individually validated.
 No upload/delete/repair is part of this command, so no `--yes` is necessary.
 
 Read `summary.json` first, then `ledger.jsonl` (all entries) and `media.csv`.

@@ -7,18 +7,19 @@ identify album duplicates, and compare each distinct media file with your
 Immich account. The dedicated binary has no upload, deletion or self-update
 commands.
 
-**Alpha:** the local scanner and mock API contracts are tested. Real Immich
-lifecycle and native cross-platform checks are configured in CI; check the
-actual run before treating them as passed. Online checks currently accept
-stable Immich 3.2.x only. This is not a backup certificate or permission to
-remove originals.
+**Alpha:** local/mock tests, native Windows/Linux/macOS checks and a disposable
+Immich 3.2.0 lifecycle [passed in CI](https://github.com/asnlsxx/takeout-audit/actions/runs/39115445636).
+Online checks accept stable Immich 3.2.x; other patches and real user exports
+have not been individually validated. This is not a backup certificate or
+permission to remove originals.
 
 [中文快速开始](START-HERE.zh-CN.md) · [Technical guide](docs/takeout-audit.md) ·
 [Validation](VALIDATION.zh-CN.md) · [Contributing](CONTRIBUTING.md)
 
 ## Try it
 
-Download a prerelease archive for your platform, extract it and run:
+Download a [prerelease archive](https://github.com/asnlsxx/takeout-audit/releases)
+for your platform, extract it and run:
 
 ```sh
 takeout-audit --inventory-only --out inventory takeout-001.zip takeout-002.zip

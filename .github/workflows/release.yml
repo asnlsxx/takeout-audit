@@ -47,7 +47,7 @@ jobs:
             NAME="takeout-audit_${OS}_${ARCH}"
             mkdir -p "dist/$NAME"
             GOOS=$OS GOARCH=$ARCH go build -trimpath -ldflags "-s -w -X main.version=$TAG -X main.commit=$SHA -X main.date=$DATE" -o "dist/$NAME/takeout-audit$EXT" ./cmd/takeout-audit
-            cp LICENSE config.example.yaml "dist/$NAME/"
+            cp LICENSE NOTICE.md config.example.yaml "dist/$NAME/"
             cp docs/quickstart.md "dist/$NAME/README.md"
             cp START-HERE.zh-CN.md "dist/$NAME/"
             (cd "dist/$NAME" && zip -q "../$NAME.zip" *)

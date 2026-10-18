@@ -36,7 +36,7 @@ func Scan(ctx context.Context, paths []string, options Options) (*Report, error)
 		return nil, err
 	}
 	r := &Report{Summary: Summary{SchemaVersion: 1, Started: time.Now().UTC(), Errors: []string{},
-		ContractValidation: "mock_contract_tests_only; real_server_validation_pending",
+		ContractValidation: "mock_contracts_and_disposable_immich_3.2.0_lifecycle; not_a_user_data_trial",
 		Limitations:        []string{"Only supplied inputs are covered; Google export completeness is unknown.", "Matches describe account catalog checksums, not current server disk integrity.", "Metadata, albums and external libraries are not verified.", "Not matched does not mean lost: editing, re-encoding or another account can change results."}}}
 	s := scanner{ctx: ctx, options: options, report: r, buffer: make([]byte, 128*1024)}
 	for _, path := range paths {

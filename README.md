@@ -75,7 +75,8 @@ These are reconciliation requests, not proof that Immich loses files.
 file hashes; [PhotoProof](https://github.com/cmer/photoproof) addresses Apple Photos.
 This fork adds a Takeout source ledger across ZIPs, duplicate-copy explanations,
 and strict unknown/error accounting. It reuses the upstream foundation and
-retains its MIT attribution. See [provenance](NOTICE.md).
+retains its MIT attribution. See [problem evidence and stop conditions](docs/problem-and-scope.md)
+and [provenance](NOTICE.md).
 
 ## Build and verify
 

@@ -13,12 +13,15 @@ DB_USERNAME=postgres
 DB_DATABASE_NAME=immich
 DB_HOSTNAME=database
 REDIS_HOSTNAME=redis
-IMMICH_TELEMETRY_INCLUDE=none
 EOF
 docker compose --env-file test/immich/.env -f test/immich/compose.yml up -d
 ready=false
 for attempt in $(seq 1 120); do
   if curl --fail --silent http://127.0.0.1:2283/api/server/ping >/dev/null; then ready=true; break; fi
+  if docker compose --env-file test/immich/.env -f test/immich/compose.yml ps -a --format json immich-server | jq -e 'select(.State == "exited" or .State == "dead")' >/dev/null; then
+    echo 'Immich exited before becoming ready; see service diagnostics.' >&2
+    exit 1
+  fi
   sleep 2
 done
 if [[ "$ready" != true ]]; then echo 'Immich did not become ready' >&2; exit 1; fi

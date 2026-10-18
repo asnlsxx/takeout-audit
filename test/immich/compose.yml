@@ -11,7 +11,11 @@ services:
     volumes:
       - uploads:/data
       - ./config.json:/config/config.json:ro
-    depends_on: [database, redis]
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_started
   redis:
     image: docker.io/valkey/valkey:9@sha256:70739f85ad2ee01a726a965584a0f94895f01b0c60b3cc8b0aeef11eaa6888cf
   database:
@@ -23,6 +27,11 @@ services:
       POSTGRES_INITDB_ARGS: --data-checksums
     volumes: [database:/var/lib/postgresql/data]
     shm_size: 128mb
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U postgres -d immich']
+      interval: 2s
+      timeout: 5s
+      retries: 30
 volumes:
   uploads:
   database:

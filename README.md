@@ -1,73 +1,106 @@
-# immich-admin-cli
+# Takeout Audit
 
-[![Build](https://img.shields.io/github/actions/workflow/status/dhcgn/immich-admin-cli/ci.yml?branch=main)](https://github.com/dhcgn/immich-admin-cli/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/dhcgn/immich-admin-cli)](https://github.com/dhcgn/immich-admin-cli/releases/latest)
-[![Go version](https://img.shields.io/github/go-mod/go-version/dhcgn/immich-admin-cli)](go.mod)
-[![Downloads](https://img.shields.io/github/downloads/dhcgn/immich-admin-cli/total)](https://github.com/dhcgn/immich-admin-cli/releases)
-[![License](https://img.shields.io/github/license/dhcgn/immich-admin-cli)](LICENSE)
+Explain what happened to every file in a Google Takeout → Immich migration.
 
-> [!WARNING]
-> **No warranty. Use at your own risk.** This tool performs bulk and destructive operations directly against your Immich server. A wrong flag, unexpected server response, or bug can cause permanent data loss. Keep a verified backup, test with non-critical data, and use `--dry-run` before changing anything. This project is not affiliated with Immich.
+Stream multiple ZIPs without extracting them, keep every source occurrence,
+identify album duplicates, and compare each distinct media file with your
+Immich account. The dedicated binary has no upload, deletion or self-update
+commands.
 
-## What You Can Do
+**Alpha:** local/mock tests, native Windows/Linux/macOS checks and a disposable
+Immich 3.2.0 lifecycle [passed in CI](https://github.com/asnlsxx/takeout-audit/actions/runs/39115445636).
+Online checks accept stable Immich 3.2.x; other patches and real user exports
+have not been individually validated. This is not a backup certificate or
+permission to remove originals.
 
-| Area | Capabilities | Start here |
-|------|--------------|------------|
-| Asset management | Inspect, upload, download originals or thumbnails, verify remote files, copy metadata, update metadata, and trash or permanently delete assets | `assets --help` |
-| Albums and sharing | Create, rename, delete, and manage album assets; add users to matching albums in bulk; merge albums; download or mirror an album locally | `albums --help`, `cw add-users-to-album-with-pattern`, `cw merge-album`, `cw download-album` |
-| Find and organize | Search by filename, type, camera, location, date, status, OCR, or description; emit pipeable asset IDs; manage tags and tag assignments | `search metadata --help`, `tags --help` |
-| Repair and replace | Replace an asset while preserving its Immich metadata; locate missing thumbnails; repair malformed JPEG/TIFF files; remove Google Takeout JSON sidecars | `cw replace-asset`, `cw find-no-thumbhash`, `cw repair-assets` |
-| Date and duplicate assistance | Check and correct assets that do not fit date-named albums; find visually similar library assets for a local image | `cw fix-album-dates`, `cw find-similar` |
-| Watch folders | Watch local folders and upload new files, or download matching assets as they appear | `cw watch-upload`, `cw watch-download` |
-| Server workflows and users | List, inspect, and read logs for Immich server-side workflows; look up users and the authenticated account | `immich-workflow --help`, `users --help` |
-| Automation | Preview changes with `--dry-run`, bypass prompts with `--yes`, pass IDs through files or stdin, use JSON/IDs-only output, and retrieve agent instructions from the binary | `immich-admin return-agent-skill` |
+[中文快速开始](START-HERE.zh-CN.md) · [Technical guide](docs/takeout-audit.md) ·
+[Validation](VALIDATION.zh-CN.md) · [Contributing](CONTRIBUTING.md)
 
-Run `immich-admin --help` for the complete command tree.
+## Try it
 
-## Use With an AI Agent
-
-Give an agent such as Hermes this prompt:
-
-```text
-Download the latest release of immich-admin-cli from https://github.com/dhcgn/immich-admin-cli/releases and make the binary available on PATH.
-
-Before using it, run `immich-admin update --check`; install an available update before performing work. Then run `immich-admin return-agent-skill`, read the generated instructions, and save them as your persistent skill for future immich-admin-cli tasks.
-
-Use the skill and the CLI's --help output as the source of truth for commands and flags. Use `--json` when you need more complete, structured information than the human-readable output provides. For every operation that can change Immich data or local files, run it with --dry-run first, show the planned effect, and ask for confirmation before using --yes or --force.
-
-Keep the Immich server up to date. immich-admin-cli follows the current Immich API specification, so an outdated server can lack commands or behavior expected by a newer CLI release.
-```
-
-## In-Depth Guide
-
-Read [Client Workflow Guide](docs/client-workflows.md) for workflow safety, repair criteria, album synchronization behavior, external-tool requirements, and copyable command examples.
-
-## Motivation
-
-immich-admin-cli provides command-line and automation support for bulk Immich tasks that are not available in the web interface, including conversion, repair, and deletion of photo assets.
-
-The generated agent skill ([immich-admin-cli/SKILL.md](immich-admin-cli/SKILL.md)) describes every command for AI agents. The CLI also supports machine-readable `--json` output, pipeable `--ids-only` IDs, `--dry-run` previews, and non-interactive `--yes` flags. Retrieve the current skill from the binary with `immich-admin return-agent-skill`.
-
-## Self-Update
-
-`immich-admin update` checks the latest [GitHub release](https://github.com/dhcgn/immich-admin-cli/releases) for a build matching the current OS/architecture and, on confirmation, replaces the running executable in place and restarts it via [`gh-update`](https://github.com/dhcgn/gh-update).
+Download a [prerelease archive](https://github.com/asnlsxx/takeout-audit/releases)
+for your platform, extract it and run:
 
 ```sh
-immich-admin update            # check, prompt, then install
-immich-admin update --check    # only check, don't install
-immich-admin update --yes      # install without prompting
+takeout-audit --inventory-only --out inventory takeout-001.zip takeout-002.zip
 ```
 
-Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version number so self-update can replace the running file. Use `immich-admin --version` or the release tag to see the installed version.
+Offline mode needs no config, account or network. It intentionally exits **2**:
+remote media checks have not happened. Supply every ZIP from the same export;
+the tool cannot know if you omitted an export part.
 
-## API Coverage
+For online checks, copy `config.example.yaml` to `config.audit.yaml`, enter your
+server origin (without `/api`) and an API key with `user.read` + `asset.upload`.
+The checksum endpoint requires that permission despite performing no upload.
 
-<!-- Generated by tools/apitable — do not edit between the markers. Refresh with `go generate ./...` -->
-<!-- API-TABLE:BEGIN -->
-**28 of 250 endpoints implemented** (24 deprecated and 2 internal endpoints omitted per project policy).
+```sh
+takeout-audit --config config.audit.yaml --out audit takeout-001.zip takeout-002.zip
+```
+
+The output directory must be new, its parent must exist, and it must be outside
+input directories. An extracted directory can replace the ZIP arguments.
+PowerShell users: pass a file array as shown in the Chinese quick start.
+
+## What you get
+
+| File | Purpose |
+|---|---|
+| `summary.json` | Source list, enumeration completeness, occurrence and distinct-content counts, errors, account/version scope |
+| `ledger.jsonl` | Every observed file, including JSON, unsupported extensions and failures |
+| `media.csv` | Filterable media rows with content group, source copies, status and reason |
+
+A photo in three albums stays three source rows but is queried once. A matched
+JPEG does not cover a missing MOV resource. Unknown responses, missing trash
+flags and corrupt ZIP members never turn into a successful match.
+
+| Exit | Meaning |
+|---|---|
+| 0 | Scoped content audit completed without attention items |
+| 1 | Completed with differences, excluded/unclassified files or no media |
+| 2 | Incomplete: offline mode, read/API/version errors or cancellation |
+
+`catalog_match` is a server catalog checksum match, not a fresh check of server
+file bytes. `not_matched` does not mean lost: edits, re-encoding, another account
+and external libraries can explain it. Metadata, albums and export completeness
+are explicitly outside scope. Never delete originals based only on this report.
+
+## Why this exists
+
+Migration users already use dry runs and debug logs, yet still need to explain
+count differences. One user eventually [wrote a hash-grouping script to explain
+album copies](https://www.reddit.com/r/immich/comments/1pvhgmk/dealing_with_discarded_assets_when_importing_from/).
+Another [reported 43,000 source items versus roughly 34,000 processed items](https://www.reddit.com/r/immich/comments/1nh869r/immichgo_wont_upload_all_photos/).
+These are reconciliation requests, not proof that Immich loses files.
+
+[immich-admin-cli](https://github.com/dhcgn/immich-admin-cli) already checks local
+file hashes; [PhotoProof](https://github.com/cmer/photoproof) addresses Apple Photos.
+This fork adds a Takeout source ledger across ZIPs, duplicate-copy explanations,
+and strict unknown/error accounting. It reuses the upstream foundation and
+retains its MIT attribution. See [problem evidence and stop conditions](docs/problem-and-scope.md)
+and [provenance](NOTICE.md).
+
+## Build and verify
+
+```sh
+go build -o takeout-audit ./cmd/takeout-audit
+go test ./...
+go vet ./...
+go generate ./...
+```
+
+Requires the Go version in `go.mod`. The inherited `immich-admin` binary still
+supports `cw audit-takeout`, but prerelease packages ship only the dedicated
+binary. Disposable real-server CI does not use private photos, production
+credentials or ML model downloads.
 
 <details>
-<summary><b>API keys</b> (0/6)</summary>
+<summary>Inherited upstream API coverage (generated)</summary>
+
+<!-- API-TABLE:BEGIN -->
+**31 of 267 endpoints implemented** (10 deprecated and 2 internal endpoints omitted per project policy).
+
+<details>
+<summary><b>API keys</b> (0/7)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
@@ -76,6 +109,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 |  | GET | `/api-keys/me` | `getMyApiKey` | Stable |
 |  | DELETE | `/api-keys/{id}` | `deleteApiKey` | Stable |
 |  | GET | `/api-keys/{id}` | `getApiKey` | Stable |
+|  | PUT | `/api-keys/{id}` | `updateApiKey` | Stable |
 |  | POST | `/api-keys/{id}/rotate` | `rotateApiKey` | – |
 
 </details>
@@ -126,12 +160,13 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 </details>
 
 <details>
-<summary><b>Assets</b> (7/24)</summary>
+<summary><b>Assets</b> (8/26)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
 | ✅ | DELETE | `/assets` | `deleteAssets` | Stable |
 | ✅ | POST | `/assets` | `uploadAsset` | Stable |
+|  | PUT | `/assets` | `updateAssets` | Stable |
 | ✅ | POST | `/assets/bulk-upload-check` | `checkBulkUpload` | Stable |
 | ✅ | PUT | `/assets/copy` | `copyAsset` | Stable |
 |  | POST | `/assets/jobs` | `runAssetJobs` | Stable |
@@ -139,6 +174,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 |  | PUT | `/assets/metadata` | `updateBulkAssetMetadata` | Beta |
 |  | GET | `/assets/statistics` | `getAssetStatistics` | Stable |
 | ✅ | GET | `/assets/{id}` | `getAssetInfo` | Stable |
+| ✅ | PUT | `/assets/{id}` | `updateAsset` | Stable |
 |  | DELETE | `/assets/{id}/edits` | `removeAssetEdits` | Beta |
 |  | GET | `/assets/{id}/edits` | `getAssetEdits` | Beta |
 |  | PUT | `/assets/{id}/edits` | `editAsset` | Beta |
@@ -295,7 +331,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 </details>
 
 <details>
-<summary><b>Libraries</b> (0/7)</summary>
+<summary><b>Libraries</b> (1/8)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
@@ -303,9 +339,10 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 |  | POST | `/libraries` | `createLibrary` | Stable |
 |  | DELETE | `/libraries/{id}` | `deleteLibrary` | Stable |
 |  | GET | `/libraries/{id}` | `getLibrary` | Stable |
+|  | PUT | `/libraries/{id}` | `updateLibrary` | Stable |
 |  | POST | `/libraries/{id}/scan` | `scanLibrary` | Stable |
 |  | GET | `/libraries/{id}/statistics` | `getLibraryStatistics` | Stable |
-|  | POST | `/libraries/{id}/validate` | `validate` | Stable |
+| ✅ | POST | `/libraries/{id}/validate` | `validate` | Stable |
 
 </details>
 
@@ -337,7 +374,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 </details>
 
 <details>
-<summary><b>Memories</b> (0/7)</summary>
+<summary><b>Memories</b> (0/8)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
@@ -346,6 +383,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 |  | GET | `/memories/statistics` | `memoriesStatistics` | Stable |
 |  | DELETE | `/memories/{id}` | `deleteMemory` | Stable |
 |  | GET | `/memories/{id}` | `getMemory` | Stable |
+|  | PUT | `/memories/{id}` | `updateMemory` | Stable |
 |  | DELETE | `/memories/{id}/assets` | `removeMemoryAssets` | Stable |
 |  | PUT | `/memories/{id}/assets` | `addMemoryAssets` | Stable |
 
@@ -389,7 +427,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 </details>
 
 <details>
-<summary><b>People</b> (0/10)</summary>
+<summary><b>People</b> (0/14)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
@@ -398,8 +436,12 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 |  | POST | `/people` | `createPerson` | Stable |
 |  | PUT | `/people` | `updatePeople` | Stable |
 |  | POST | `/people/merge` | `mergePeople` | Stable |
+|  | DELETE | `/people/users` | `removeUsersFromPeople` | Beta |
+|  | GET | `/people/users` | `getUsersForPeople` | Beta |
+|  | PUT | `/people/users` | `upsertPeopleUsers` | Beta |
 |  | DELETE | `/people/{id}` | `deletePerson` | Stable |
 |  | GET | `/people/{id}` | `getPerson` | Stable |
+|  | PUT | `/people/{id}` | `updatePerson` | Stable |
 |  | PUT | `/people/{id}/reassign` | `reassignFaces` | Stable |
 |  | GET | `/people/{id}/statistics` | `getPersonStatistics` | Stable |
 |  | GET | `/people/{id}/thumbnail` | `getPersonThumbnail` | Stable |
@@ -449,7 +491,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 </details>
 
 <details>
-<summary><b>Server</b> (0/12)</summary>
+<summary><b>Server</b> (1/12)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
@@ -462,14 +504,14 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 |  | GET | `/server/ping` | `pingServer` | Stable |
 |  | GET | `/server/statistics` | `getServerStatistics` | Stable |
 |  | GET | `/server/storage` | `getStorage` | Stable |
-|  | GET | `/server/version` | `getServerVersion` | Stable |
+| ✅ | GET | `/server/version` | `getServerVersion` | Stable |
 |  | GET | `/server/version-check` | `getVersionCheck` | Stable |
 |  | GET | `/server/version-history` | `getVersionHistory` | Stable |
 
 </details>
 
 <details>
-<summary><b>Sessions</b> (0/5)</summary>
+<summary><b>Sessions</b> (0/6)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
@@ -477,6 +519,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 |  | GET | `/sessions` | `getSessions` | Stable |
 |  | POST | `/sessions` | `createSession` | Stable |
 |  | DELETE | `/sessions/{id}` | `deleteSession` | Stable |
+|  | PUT | `/sessions/{id}` | `updateSession` | Stable |
 |  | POST | `/sessions/{id}/lock` | `lockSession` | Stable |
 
 </details>
@@ -499,7 +542,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 </details>
 
 <details>
-<summary><b>Stacks</b> (0/6)</summary>
+<summary><b>Stacks</b> (0/7)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
@@ -508,6 +551,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 |  | POST | `/stacks` | `createStack` | Stable |
 |  | DELETE | `/stacks/{id}` | `deleteStack` | Stable |
 |  | GET | `/stacks/{id}` | `getStack` | Stable |
+|  | PUT | `/stacks/{id}` | `updateStack` | Stable |
 |  | DELETE | `/stacks/{id}/assets/{assetId}` | `removeAssetFromStack` | Stable |
 
 </details>
@@ -546,7 +590,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 </details>
 
 <details>
-<summary><b>Tags</b> (6/8)</summary>
+<summary><b>Tags</b> (6/9)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
@@ -556,6 +600,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 | ✅ | PUT | `/tags/assets` | `bulkTagAssets` | Stable |
 | ✅ | DELETE | `/tags/{id}` | `deleteTag` | Stable |
 | ✅ | GET | `/tags/{id}` | `getTagById` | Stable |
+|  | PUT | `/tags/{id}` | `updateTag` | Stable |
 |  | DELETE | `/tags/{id}/assets` | `untagAssets` | Stable |
 | ✅ | PUT | `/tags/{id}/assets` | `tagAssets` | Stable |
 
@@ -573,12 +618,13 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 </details>
 
 <details>
-<summary><b>Users</b> (3/14)</summary>
+<summary><b>Users</b> (3/16)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
 | ✅ | GET | `/users` | `searchUsers` | Stable |
 | ✅ | GET | `/users/me` | `getMyUser` | Stable |
+|  | PUT | `/users/me` | `updateMyUser` | Stable |
 |  | GET | `/users/me/calendar-heatmap` | `getMyCalendarHeatmap` | Stable |
 |  | DELETE | `/users/me/license` | `deleteUserLicense` | Stable |
 |  | GET | `/users/me/license` | `getUserLicense` | Stable |
@@ -587,6 +633,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 |  | GET | `/users/me/onboarding` | `getUserOnboarding` | Stable |
 |  | PUT | `/users/me/onboarding` | `setUserOnboarding` | Stable |
 |  | GET | `/users/me/preferences` | `getMyPreferences` | Stable |
+|  | PUT | `/users/me/preferences` | `updateMyPreferences` | Stable |
 |  | DELETE | `/users/profile-image` | `deleteProfileImage` | Stable |
 |  | POST | `/users/profile-image` | `createProfileImage` | Stable |
 | ✅ | GET | `/users/{id}` | `getUser` | Stable |
@@ -595,7 +642,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 </details>
 
 <details>
-<summary><b>Users (admin)</b> (0/9)</summary>
+<summary><b>Users (admin)</b> (0/11)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
@@ -603,8 +650,10 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 |  | POST | `/admin/users` | `createUserAdmin` | Stable |
 |  | DELETE | `/admin/users/{id}` | `deleteUserAdmin` | Stable |
 |  | GET | `/admin/users/{id}` | `getUserAdmin` | Stable |
+|  | PUT | `/admin/users/{id}` | `updateUserAdmin` | Stable |
 |  | GET | `/admin/users/{id}/calendar-heatmap` | `getUserCalendarHeatmapAdmin` | Stable |
 |  | GET | `/admin/users/{id}/preferences` | `getUserPreferencesAdmin` | Stable |
+|  | PUT | `/admin/users/{id}/preferences` | `updateUserPreferencesAdmin` | Stable |
 |  | POST | `/admin/users/{id}/restore` | `restoreUserAdmin` | Stable |
 |  | GET | `/admin/users/{id}/sessions` | `getUserSessionsAdmin` | Stable |
 |  | GET | `/admin/users/{id}/statistics` | `getUserStatisticsAdmin` | Stable |
@@ -622,7 +671,7 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 </details>
 
 <details>
-<summary><b>Workflows</b> (3/7)</summary>
+<summary><b>Workflows</b> (3/8)</summary>
 
 | Impl | Method | Path | Operation | State |
 |:----:|--------|------|-----------|-------|
@@ -631,8 +680,11 @@ Release binaries are named `immich-admin_<os>_<arch>[.exe]` without a version nu
 |  | GET | `/workflows/triggers` | `getWorkflowTriggers` | – |
 |  | DELETE | `/workflows/{id}` | `deleteWorkflow` | – |
 | ✅ | GET | `/workflows/{id}` | `getWorkflow` | – |
+|  | PUT | `/workflows/{id}` | `updateWorkflow` | – |
 | ✅ | GET | `/workflows/{id}/logs` | `getWorkflowLogs` | – |
 |  | GET | `/workflows/{id}/share` | `getWorkflowForShare` | – |
 
 </details>
 <!-- API-TABLE:END -->
+
+</details>

@@ -1,5 +1,10 @@
-# Auto detect text files and perform LF normalization
+# Keep generated source and CI scripts deterministic on Windows and Unix.
 * text=auto
-# Executed/sourced inside the Linux container: CRLF breaks shebangs and sourcing.
+*.go text eol=lf
 *.sh text eol=lf
-.devcontainer/xdg-open text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+go.mod text eol=lf
+go.sum text eol=lf

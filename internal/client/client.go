@@ -27,12 +27,18 @@ type Client struct {
 
 // New builds an authenticated client from the config. The spec declares
 // servers: [{"url": "/api"}], so the base URL is the server origin + /api.
-func New(cfg *config.Config) (*Client, error) {
+func New(cfg *config.Config, options ...Option) (*Client, error) {
 	baseURL := strings.TrimRight(cfg.Server, "/") + "/api"
 	apiKey := cfg.APIKey
+	transportClient := httpClient()
+	for _, option := range options {
+		if err := option(transportClient, cfg.Server); err != nil {
+			return nil, err
+		}
+	}
 
 	api, err := immichapi.NewClientWithResponses(baseURL,
-		immichapi.WithHTTPClient(httpClient()),
+		immichapi.WithHTTPClient(transportClient),
 		immichapi.WithRequestEditorFn(func(_ context.Context, req *http.Request) error {
 			req.Header.Set("x-api-key", apiKey)
 			return nil
@@ -101,6 +107,9 @@ func (c *Client) ServerVersion(ctx context.Context) (immichapi.ServerVersionResp
 	if err := Check(resp, http.StatusOK); err != nil {
 		return immichapi.ServerVersionResponseDto{}, fmt.Errorf("GET /server/version: %w", err)
 	}
+	if resp.JSON200 == nil {
+		return immichapi.ServerVersionResponseDto{}, fmt.Errorf("GET /server/version: missing JSON body")
+	}
 	return *resp.JSON200, nil
 }
 
@@ -156,6 +165,10 @@ func (c *Client) PrintIdentity(ctx context.Context) {
 	}
 	if resp.StatusCode() != http.StatusOK {
 		fmt.Fprintf(os.Stderr, "⚠ could not verify identity: %s\n", resp.Status())
+		return
+	}
+	if resp.JSON200 == nil {
+		fmt.Fprintln(os.Stderr, "could not verify identity: missing JSON body")
 		return
 	}
 	version := "unknown"

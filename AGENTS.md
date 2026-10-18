@@ -100,7 +100,7 @@ go fix ./...    # check for outdated API usage that should be modernized
 ### Integration tests (real servers, opt-in)
 
 Unit tests run everywhere (`go test ./...`); integration tests talk to real
-servers and are excluded from CI by the `integration` build tag. Two tiers:
+servers and are excluded by default through the `integration` build tag. Two tiers:
 
 - **Read-only prod tests** (`internal/workflows/*_integration_test.go`): only
   ever read — never mutate. They use `configPath = ../../config.prod.yaml`
@@ -121,8 +121,12 @@ go test -tags integration ./internal/commands/ [-run Name]
 
 Rules for future work: a new write-capable command/workflow ships a staging
 roundtrip test; a new read command extends the staging read coverage. Never
-commit `config*.yaml` (gitignored — API keys); CI never passes `-tags
-integration`.
+commit `config*.yaml` (gitignored — API keys). CI must never run the general
+staging/production integration suites. This Takeout Audit fork has one isolated
+exception: `TestAuditTakeoutLifecycleIntegration` selected by exact name, with
+`TAKEOUT_AUDIT_DISPOSABLE=1`, a loopback-only disposable container, synthetic
+fixtures, generated short-lived credentials, and unconditional volume cleanup.
+No production secrets or private photos may enter that job.
 
 ## Conventions
 
@@ -194,7 +198,11 @@ How the two generators work — important when touching the spec, the generated 
 
 - Version, commit, and build date are injected at build time via `-ldflags "-X main.version=… -X main.commit=… -X main.date=…"` into `cmd/immich-admin/main.go`; shown by `immich-admin --version`.
 - CI (`.github/workflows/ci.yml`): fmt/build/vet/test + generated-code freshness check on pushes/PRs to `main`.
-- Releases (`.github/workflows/release.yml`): a `v*` tag on `main` produces a stable release. Binaries are cross-compiled for linux/darwin/windows.
+- Takeout Audit prereleases (`.github/workflows/release.yml`): manually dispatch
+  an existing `audit-vX.Y.Z-alpha.N` (or beta/rc) tag only after CI passes for
+  that commit. Packages contain the dedicated read-only binary. The inherited
+  upstream stable-release instructions below describe upstream history; do not
+  use its `v*` namespace or publish a stable fork release before validation.
 
 ## Branching & Release Workflow
 

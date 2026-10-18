@@ -1,62 +1,64 @@
-name: Release
-
+name: Prerelease
 on:
-  push:
-    tags: ["v*"] # stable release: push a tag like v1.2.3 on main
-    # Note: GitHub does not evaluate path filters for tag pushes,
-    # so tagged stable releases always run.
-    paths-ignore: ["**.md"]
-
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing audit prerelease tag, for example audit-v0.1.0-alpha.1'
+        required: true
+        type: string
 permissions:
-  contents: write # create releases
-
+  contents: write
+  actions: read
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # full history so git describe finds the latest tag
-
+          ref: ${{ inputs.tag }}
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-
-      - name: Determine version
-        id: version
-        run: |
-          # Stable release: version = the pushed tag.
-          echo "version=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
-          echo "prerelease=false" >> "$GITHUB_OUTPUT"
-
-      - name: Build binaries
+      - name: Validate prerelease tag
         env:
-          VERSION: ${{ steps.version.outputs.version }}
-          CGO_ENABLED: "0"
+          TAG: ${{ inputs.tag }}
+        run: '[[ "$TAG" =~ ^audit-v[0-9]+\.[0-9]+\.[0-9]+-(alpha|beta|rc)\.[0-9]+$ ]]'
+      - name: Require successful CI for the exact commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
+          SHA=$(git rev-parse HEAD)
+          gh run list --workflow ci.yml --commit "$SHA" --event push --limit 20 \
+            --json status,conclusion | jq -e 'any(.[]; .status == "completed" and .conclusion == "success")'
+      - run: go test ./...
+      - name: Build dedicated binaries
+        env:
+          TAG: ${{ inputs.tag }}
+          CGO_ENABLED: '0'
+        run: |
+          SHA=$(git rev-parse --short HEAD)
           DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          LDFLAGS="-s -w -X main.version=${VERSION} -X main.commit=${GITHUB_SHA::7} -X main.date=${DATE}"
           mkdir -p dist
           for target in linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64; do
-            GOOS=${target%/*}
-            GOARCH=${target#*/}
-            EXT=""
-            [ "$GOOS" = "windows" ] && EXT=".exe"
-            # No version in the filename: `immich-admin update` replaces this
-            # binary in place, keeping its original name, so a version baked
-            # into the name would go stale the moment it self-updates. The
-            # `immich-admin --version` output and the release tag remain the
-            # source of truth for the installed version.
-            OUT="dist/immich-admin_${GOOS}_${GOARCH}${EXT}"
-            echo "Building $OUT"
-            GOOS=$GOOS GOARCH=$GOARCH go build -trimpath -ldflags "$LDFLAGS" -o "$OUT" ./cmd/immich-admin
+            OS=${target%/*}; ARCH=${target#*/}; EXT=""
+            [ "$OS" = windows ] && EXT=".exe"
+            NAME="takeout-audit_${OS}_${ARCH}"
+            mkdir -p "dist/$NAME"
+            GOOS=$OS GOARCH=$ARCH go build -trimpath -ldflags "-s -w -X main.version=$TAG -X main.commit=$SHA -X main.date=$DATE" -o "dist/$NAME/takeout-audit$EXT" ./cmd/takeout-audit
+            cp LICENSE NOTICE.md config.example.yaml "dist/$NAME/"
+            cp docs/quickstart.md "dist/$NAME/README.md"
+            cp START-HERE.zh-CN.md "dist/$NAME/"
+            (cd "dist/$NAME" && zip -q "../$NAME.zip" *)
           done
-          (cd dist && sha256sum * > checksums.txt)
-
-      - name: Create release
-        uses: softprops/action-gh-release@v2
+          (cd dist && sha256sum *.zip > SHA256SUMS.txt)
+      - uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.version }}
-          prerelease: ${{ steps.version.outputs.prerelease }}
-          generate_release_notes: true
-          files: dist/*
+          tag_name: ${{ inputs.tag }}
+          prerelease: true
+          make_latest: false
+          body_path: docs/release-notes.md
+          files: |
+            dist/*.zip
+            dist/SHA256SUMS.txt

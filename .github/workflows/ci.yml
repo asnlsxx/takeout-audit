@@ -1,45 +1,59 @@
 name: CI
-
 on:
   push:
     branches: [main]
-    paths-ignore: ["**.md"]
   pull_request:
     branches: [main]
-    paths-ignore: ["**.md"]
-
+  workflow_dispatch:
 permissions:
   contents: read
-
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-
-      - name: Check formatting
-        run: |
-          UNFORMATTED=$(gofmt -l .)
-          if [ -n "$UNFORMATTED" ]; then
-            echo "Files not gofmt-formatted:" && echo "$UNFORMATTED"
-            exit 1
-          fi
-
-      - name: Build
-        run: go build ./...
-
-      - name: Vet
-        run: go vet ./...
-
-      - name: Test
-        run: go test ./...
-
-      - name: Verify generated client, README API table, and agent skill are up to date
+      - name: Formatting
+        shell: bash
+        run: test -z "$(gofmt -l .)"
+      - run: go build ./...
+      - run: go vet ./...
+      - run: go test ./...
+      - name: Generated outputs
+        shell: bash
         run: |
           go generate ./...
-          git diff --exit-code internal/immichapi/ README.md immich-admin-cli/SKILL.md \
-            || (echo "::error::Generated client, README API table, or agent skill is stale. Run 'go generate ./...' and commit." && exit 1)
+          git diff --exit-code internal/immichapi/ README.md immich-admin-cli/SKILL.md
+      - name: Dedicated binary smoke test
+        shell: bash
+        run: |
+          go run ./cmd/takeout-audit --help
+          go run ./cmd/takeout-audit --version
+  lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Start disposable Immich 3.2.0 (no ML models)
+        run: bash scripts/start-immich-ci.sh
+      - name: Matched, missing, trashed; restricted key; no audit mutations
+        run: go test -tags integration ./internal/commands -run '^TestAuditTakeoutLifecycleIntegration$' -count=1 -v
+      - name: Service diagnostics on failure
+        if: failure()
+        run: docker compose --env-file test/immich/.env -f test/immich/compose.yml logs --tail=100
+      - name: Remove disposable fixture
+        if: always()
+        run: docker compose --env-file test/immich/.env -f test/immich/compose.yml down -v --remove-orphans

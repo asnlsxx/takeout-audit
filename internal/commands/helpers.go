@@ -22,12 +22,12 @@ import (
 // newClient loads the config named by the root --config flag and returns an
 // authenticated API client. Every command action starts with this one call.
 // It prints the current user identity to stderr for safety.
-func newClient(ctx context.Context, cmd *cli.Command) (*client.Client, error) {
+func newClient(ctx context.Context, cmd *cli.Command, options ...client.Option) (*client.Client, error) {
 	cfg, err := config.Load(cmd.String("config"))
 	if err != nil {
 		return nil, err
 	}
-	c, err := client.New(cfg)
+	c, err := client.New(cfg, options...)
 	if err != nil {
 		return nil, err
 	}

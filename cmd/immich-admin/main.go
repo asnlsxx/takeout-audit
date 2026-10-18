@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 
@@ -48,6 +49,7 @@ func main() {
 			},
 		},
 		Commands: []*cli.Command{
+			commands.Server(),
 			commands.Assets(),
 			commands.Albums(),
 			commands.Search(),
@@ -69,6 +71,9 @@ func main() {
 
 	if err := root.Run(context.Background(), os.Args); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
+		if exit, ok := errors.AsType[cli.ExitCoder](err); ok {
+			os.Exit(exit.ExitCode())
+		}
 		os.Exit(1)
 	}
 }

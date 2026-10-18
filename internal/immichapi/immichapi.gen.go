@@ -812,12 +812,15 @@ func (e MemorySearchOrder) Valid() bool {
 
 // Defines values for MemoryType.
 const (
+	Birthday  MemoryType = "birthday"
 	OnThisDay MemoryType = "on_this_day"
 )
 
 // Valid indicates whether the value is a known member of the MemoryType enum.
 func (e MemoryType) Valid() bool {
 	switch e {
+	case Birthday:
+		return true
 	case OnThisDay:
 		return true
 	default:
@@ -920,16 +923,31 @@ func (e OAuthTokenEndpointAuthMethod) Valid() bool {
 
 // Defines values for PartnerDirection.
 const (
-	SharedBy   PartnerDirection = "shared-by"
-	SharedWith PartnerDirection = "shared-with"
+	PartnerDirectionSharedBy   PartnerDirection = "shared-by"
+	PartnerDirectionSharedWith PartnerDirection = "shared-with"
 )
 
 // Valid indicates whether the value is a known member of the PartnerDirection enum.
 func (e PartnerDirection) Valid() bool {
 	switch e {
-	case SharedBy:
+	case PartnerDirectionSharedBy:
 		return true
-	case SharedWith:
+	case PartnerDirectionSharedWith:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PeopleUsersUpsertType.
+const (
+	PeopleUsersUpsertTypeEveryone PeopleUsersUpsertType = "everyone"
+)
+
+// Valid indicates whether the value is a known member of the PeopleUsersUpsertType enum.
+func (e PeopleUsersUpsertType) Valid() bool {
+	switch e {
+	case PeopleUsersUpsertTypeEveryone:
 		return true
 	default:
 		return false
@@ -1452,6 +1470,45 @@ func (e Permission) Valid() bool {
 	}
 }
 
+// Defines values for PersonUpdateStrategy.
+const (
+	PersonUpdateStrategyEveryone PersonUpdateStrategy = "everyone"
+	PersonUpdateStrategySelf     PersonUpdateStrategy = "self"
+)
+
+// Valid indicates whether the value is a known member of the PersonUpdateStrategy enum.
+func (e PersonUpdateStrategy) Valid() bool {
+	switch e {
+	case PersonUpdateStrategyEveryone:
+		return true
+	case PersonUpdateStrategySelf:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PersonUserRole.
+const (
+	Admin PersonUserRole = "admin"
+	Read  PersonUserRole = "read"
+	Write PersonUserRole = "write"
+)
+
+// Valid indicates whether the value is a known member of the PersonUserRole enum.
+func (e PersonUserRole) Valid() bool {
+	switch e {
+	case Admin:
+		return true
+	case Read:
+		return true
+	case Write:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for QueueCommand.
 const (
 	QueueCommandClearFailed QueueCommand = "clear-failed"
@@ -1704,6 +1761,24 @@ func (e SharedLinkType) Valid() bool {
 	}
 }
 
+// Defines values for SharingDirection.
+const (
+	SharingDirectionSharedBy   SharingDirection = "shared-by"
+	SharingDirectionSharedWith SharingDirection = "shared-with"
+)
+
+// Valid indicates whether the value is a known member of the SharingDirection enum.
+func (e SharingDirection) Valid() bool {
+	switch e {
+	case SharingDirectionSharedBy:
+		return true
+	case SharingDirectionSharedWith:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SourceType.
 const (
 	Exif            SourceType = "exif"
@@ -1794,7 +1869,9 @@ const (
 	SyncEntityTypeMemoryDeleteV1             SyncEntityType = "MemoryDeleteV1"
 	SyncEntityTypeMemoryToAssetDeleteV1      SyncEntityType = "MemoryToAssetDeleteV1"
 	SyncEntityTypeMemoryToAssetV1            SyncEntityType = "MemoryToAssetV1"
+	SyncEntityTypeMemoryToAssetV2            SyncEntityType = "MemoryToAssetV2"
 	SyncEntityTypeMemoryV1                   SyncEntityType = "MemoryV1"
+	SyncEntityTypeMemoryV2                   SyncEntityType = "MemoryV2"
 	SyncEntityTypePartnerAssetBackfillV1     SyncEntityType = "PartnerAssetBackfillV1"
 	SyncEntityTypePartnerAssetBackfillV2     SyncEntityType = "PartnerAssetBackfillV2"
 	SyncEntityTypePartnerAssetDeleteV1       SyncEntityType = "PartnerAssetDeleteV1"
@@ -1897,7 +1974,11 @@ func (e SyncEntityType) Valid() bool {
 		return true
 	case SyncEntityTypeMemoryToAssetV1:
 		return true
+	case SyncEntityTypeMemoryToAssetV2:
+		return true
 	case SyncEntityTypeMemoryV1:
+		return true
+	case SyncEntityTypeMemoryV2:
 		return true
 	case SyncEntityTypePartnerAssetBackfillV1:
 		return true
@@ -1971,7 +2052,9 @@ const (
 	SyncRequestTypeAuthUsersV1         SyncRequestType = "AuthUsersV1"
 	SyncRequestTypeAuthUsersV2         SyncRequestType = "AuthUsersV2"
 	SyncRequestTypeMemoriesV1          SyncRequestType = "MemoriesV1"
+	SyncRequestTypeMemoriesV2          SyncRequestType = "MemoriesV2"
 	SyncRequestTypeMemoryToAssetsV1    SyncRequestType = "MemoryToAssetsV1"
+	SyncRequestTypeMemoryToAssetsV2    SyncRequestType = "MemoryToAssetsV2"
 	SyncRequestTypePartnerAssetExifsV1 SyncRequestType = "PartnerAssetExifsV1"
 	SyncRequestTypePartnerAssetsV1     SyncRequestType = "PartnerAssetsV1"
 	SyncRequestTypePartnerAssetsV2     SyncRequestType = "PartnerAssetsV2"
@@ -2024,7 +2107,11 @@ func (e SyncRequestType) Valid() bool {
 		return true
 	case SyncRequestTypeMemoriesV1:
 		return true
+	case SyncRequestTypeMemoriesV2:
+		return true
 	case SyncRequestTypeMemoryToAssetsV1:
+		return true
+	case SyncRequestTypeMemoryToAssetsV2:
 		return true
 	case SyncRequestTypePartnerAssetExifsV1:
 		return true
@@ -3281,6 +3368,9 @@ type AssetFaceCreateDto struct {
 	// PersonId Person ID
 	PersonId openapi_types.UUID `json:"personId"`
 
+	// UserId User ID
+	UserId *openapi_types.UUID `json:"userId,omitempty"`
+
 	// Width Face bounding box width
 	Width int `json:"width"`
 
@@ -3338,6 +3428,9 @@ type AssetFaceUpdateItem struct {
 
 	// PersonId Person ID
 	PersonId openapi_types.UUID `json:"personId"`
+
+	// UserId User ID
+	UserId *openapi_types.UUID `json:"userId,omitempty"`
 }
 
 // AssetFileResponseDto defines model for AssetFileResponseDto.
@@ -4509,7 +4602,7 @@ type MemoriesUpdate struct {
 type MemoryCreateDto struct {
 	// AssetIds Asset IDs to associate with memory
 	AssetIds *[]openapi_types.UUID `json:"assetIds,omitempty"`
-	Data     OnThisDayDto          `json:"data"`
+	Data     MemoryDataDto         `json:"data"`
 
 	// HideAt Date when memory should be hidden
 	//
@@ -4538,6 +4631,18 @@ type MemoryCreateDto struct {
 	Type MemoryType `json:"type"`
 }
 
+// MemoryDataDto defines model for MemoryDataDto.
+type MemoryDataDto struct {
+	// PersonId Person ID (birthday memories)
+	PersonId *openapi_types.UUID `json:"personId,omitempty"`
+
+	// PersonName Name of the person when the memory was created (birthday memories)
+	PersonName *string `json:"personName,omitempty"`
+
+	// Year Year of the memory
+	Year int `json:"year"`
+}
+
 // MemoryResponseDto defines model for MemoryResponseDto.
 type MemoryResponseDto struct {
 	Assets []AssetResponseDto `json:"assets"`
@@ -4545,8 +4650,8 @@ type MemoryResponseDto struct {
 	// CreatedAt Creation date
 	//
 	// Example: 2024-01-01T00:00:00.000Z
-	CreatedAt time.Time    `json:"createdAt"`
-	Data      OnThisDayDto `json:"data"`
+	CreatedAt time.Time     `json:"createdAt"`
+	Data      MemoryDataDto `json:"data"`
 
 	// DeletedAt Deletion date
 	//
@@ -4970,12 +5075,6 @@ type OAuthConfigDto struct {
 // OAuthTokenEndpointAuthMethod OAuth token endpoint auth method
 type OAuthTokenEndpointAuthMethod string
 
-// OnThisDayDto defines model for OnThisDayDto.
-type OnThisDayDto struct {
-	// Year Year for on this day memory
-	Year int `json:"year"`
-}
-
 // OnboardingDto defines model for OnboardingDto.
 type OnboardingDto struct {
 	// IsOnboarded Is user onboarded
@@ -5027,6 +5126,13 @@ type PartnerUpdateDto struct {
 	InTimeline bool `json:"inTimeline"`
 }
 
+// PeopleDeleteDto defines model for PeopleDeleteDto.
+type PeopleDeleteDto struct {
+	// Ids IDs to process
+	Ids    []openapi_types.UUID `json:"ids"`
+	UserId *string              `json:"userId,omitempty"`
+}
+
 // PeopleResponse defines model for PeopleResponse.
 type PeopleResponse struct {
 	// Enabled Whether people are enabled
@@ -5037,6 +5143,9 @@ type PeopleResponse struct {
 
 	// SidebarWeb Whether people appear in web sidebar
 	SidebarWeb bool `json:"sidebarWeb"`
+
+	// UpdateStrategy Which person records to update when editing a person
+	UpdateStrategy PersonUpdateStrategy `json:"updateStrategy"`
 }
 
 // PeopleResponseDto People response
@@ -5062,6 +5171,9 @@ type PeopleUpdate struct {
 
 	// SidebarWeb Whether people appear in web sidebar
 	SidebarWeb *bool `json:"sidebarWeb,omitempty"`
+
+	// UpdateStrategy Which person records to update when editing a person
+	UpdateStrategy *PersonUpdateStrategy `json:"updateStrategy,omitempty"`
 }
 
 // PeopleUpdateDto defines model for PeopleUpdateDto.
@@ -5092,7 +5204,52 @@ type PeopleUpdateItem struct {
 
 	// Name Person name
 	Name *string `json:"name,omitempty"`
+
+	// UserId Restrict the update to the person record of this User ID
+	UserId *openapi_types.UUID `json:"userId,omitempty"`
 }
+
+// PeopleUserResponseDto defines model for PeopleUserResponseDto.
+type PeopleUserResponseDto struct {
+	// AvatarColor User avatar color
+	AvatarColor UserAvatarColor `json:"avatarColor"`
+
+	// Email User email
+	Email openapi_types.Email `json:"email"`
+
+	// Id User ID
+	Id openapi_types.UUID `json:"id"`
+
+	// Name User name
+	Name string `json:"name"`
+
+	// ProfileChangedAt Profile change date
+	ProfileChangedAt time.Time `json:"profileChangedAt"`
+
+	// ProfileImagePath Profile image path
+	ProfileImagePath string `json:"profileImagePath"`
+
+	// Role Levels of access for managing people resources on behalf of another user.
+	Role PersonUserRole `json:"role"`
+}
+
+// PeopleUsersUpsertDto defines model for PeopleUsersUpsertDto.
+type PeopleUsersUpsertDto struct {
+	// PersonIds Person IDs, required when type is omitted
+	PersonIds *[]openapi_types.UUID `json:"personIds,omitempty"`
+
+	// Role Levels of access for managing people resources on behalf of another user.
+	Role PersonUserRole `json:"role"`
+
+	// SharedWithIds User IDs that should be given access to the person
+	SharedWithIds []openapi_types.UUID `json:"sharedWithIds"`
+
+	// Type Which people to update when personIds is omitted
+	Type *PeopleUsersUpsertType `json:"type,omitempty"`
+}
+
+// PeopleUsersUpsertType Which people to update when personIds is omitted
+type PeopleUsersUpsertType string
 
 // Permission List of permissions
 type Permission string
@@ -5115,6 +5272,21 @@ type PersonCreateDto struct {
 	Name *string `json:"name,omitempty"`
 }
 
+// PersonDeleteDto defines model for PersonDeleteDto.
+type PersonDeleteDto struct {
+	UserId *string `json:"userId,omitempty"`
+}
+
+// PersonOtherResponseDto defines model for PersonOtherResponseDto.
+type PersonOtherResponseDto struct {
+	BirthDate *string `json:"birthDate"`
+	Name      string  `json:"name"`
+
+	// Role Levels of access for managing people resources on behalf of another user.
+	Role       PersonUserRole     `json:"role"`
+	SharedById openapi_types.UUID `json:"sharedById"`
+}
+
 // PersonResponseDto defines model for PersonResponseDto.
 type PersonResponseDto struct {
 	// BirthDate Person date of birth
@@ -5133,7 +5305,14 @@ type PersonResponseDto struct {
 	IsHidden bool `json:"isHidden"`
 
 	// Name Person name
-	Name string `json:"name"`
+	Name        string                   `json:"name"`
+	OtherPeople []PersonOtherResponseDto `json:"otherPeople"`
+
+	// SharedBy Users that gave the current user access to this person
+	SharedBy []PeopleUserResponseDto `json:"sharedBy"`
+
+	// SharedWith Users the current user gave access to this person
+	SharedWith []PeopleUserResponseDto `json:"sharedWith"`
 
 	// ThumbnailPath Thumbnail path
 	ThumbnailPath string `json:"thumbnailPath"`
@@ -5167,6 +5346,44 @@ type PersonUpdateDto struct {
 
 	// Name Person name
 	Name *string `json:"name,omitempty"`
+
+	// UserId Restrict the update to the person record of this User ID
+	UserId *openapi_types.UUID `json:"userId,omitempty"`
+}
+
+// PersonUpdateStrategy Which person records to update when editing a person
+type PersonUpdateStrategy string
+
+// PersonUserRole Levels of access for managing people resources on behalf of another user.
+type PersonUserRole string
+
+// PersonUsersDeleteDto defines model for PersonUsersDeleteDto.
+type PersonUsersDeleteDto = []struct {
+	// PersonId Person ID
+	PersonId openapi_types.UUID `json:"personId"`
+
+	// SharedById User ID of the user that gave access to the person
+	SharedById *openapi_types.UUID `json:"sharedById,omitempty"`
+
+	// SharedWithId User ID of the user that was given access to the person
+	SharedWithId openapi_types.UUID `json:"sharedWithId"`
+}
+
+// PersonUsersResponseDto defines model for PersonUsersResponseDto.
+type PersonUsersResponseDto = []struct {
+	// PersonId Person ID
+	PersonId openapi_types.UUID `json:"personId"`
+
+	// Role Levels of access for managing people resources on behalf of another user.
+	Role     PersonUserRole  `json:"role"`
+	SharedBy UserResponseDto `json:"sharedBy"`
+
+	// SharedById User ID of the user that gave access to this person
+	SharedById openapi_types.UUID `json:"sharedById"`
+	SharedWith UserResponseDto    `json:"sharedWith"`
+
+	// SharedWithId User ID of the user that was given access to this person
+	SharedWithId openapi_types.UUID `json:"sharedWithId"`
 }
 
 // PinCodeChangeDto defines model for PinCodeChangeDto.
@@ -5312,10 +5529,34 @@ type PluginTemplateStepResponseDto struct {
 
 // PublicConfigDto Configuration properties that are visible to everyone
 type PublicConfigDto struct {
+	Ffmpeg        PublicConfigFFmpegDto        `json:"ffmpeg"`
+	Map           PublicConfigMapDto           `json:"map"`
 	Oauth         PublicConfigOAuthDto         `json:"oauth"`
 	PasswordLogin PublicConfigPasswordLoginDto `json:"passwordLogin"`
 	Server        PublicConfigServerDto        `json:"server"`
-	Theme         PublicConfigThemeDto         `json:"theme"`
+}
+
+// PublicConfigFFmpegDto defines model for PublicConfigFFmpegDto.
+type PublicConfigFFmpegDto struct {
+	Realtime PublicConfigFFmpegRealtimeDto `json:"realtime"`
+}
+
+// PublicConfigFFmpegRealtimeDto defines model for PublicConfigFFmpegRealtimeDto.
+type PublicConfigFFmpegRealtimeDto struct {
+	// Enabled Enable real-time HLS transcoding (alpha)
+	Enabled bool `json:"enabled"`
+}
+
+// PublicConfigMapDto defines model for PublicConfigMapDto.
+type PublicConfigMapDto struct {
+	// DarkStyle Dark map style URL
+	DarkStyle string `json:"darkStyle"`
+
+	// Enabled Enabled
+	Enabled bool `json:"enabled"`
+
+	// LightStyle Light map style URL
+	LightStyle string `json:"lightStyle"`
 }
 
 // PublicConfigOAuthDto defines model for PublicConfigOAuthDto.
@@ -5340,12 +5581,6 @@ type PublicConfigPasswordLoginDto struct {
 type PublicConfigServerDto struct {
 	// LoginPageMessage Login page message
 	LoginPageMessage string `json:"loginPageMessage"`
-}
-
-// PublicConfigThemeDto defines model for PublicConfigThemeDto.
-type PublicConfigThemeDto struct {
-	// CustomCss Custom CSS for theming
-	CustomCss string `json:"customCss"`
 }
 
 // PurchaseResponse defines model for PurchaseResponse.
@@ -6082,6 +6317,9 @@ type ServerVersionHistoryResponseDto struct {
 
 // ServerVersionResponseDto defines model for ServerVersionResponseDto.
 type ServerVersionResponseDto struct {
+	// FeatureLevel Highest feature level supported by the server, which increments independently of the release version
+	FeatureLevel int `json:"featureLevel"`
+
 	// Major Major version number
 	Major int `json:"major"`
 
@@ -6333,6 +6571,9 @@ type SharedLinksUpdate struct {
 	// SidebarWeb Whether shared links appear in web sidebar
 	SidebarWeb *bool `json:"sidebarWeb,omitempty"`
 }
+
+// SharingDirection Sharing direction
+type SharingDirection string
 
 // SignUpDto defines model for SignUpDto.
 type SignUpDto struct {
@@ -7186,11 +7427,11 @@ type UserConfigDto struct {
 	Image            UserConfigImageDto            `json:"image"`
 	MachineLearning  UserConfigMachineLearningDto  `json:"machineLearning"`
 	Map              UserConfigMapDto              `json:"map"`
+	Notifications    UserConfigNotificationsDto    `json:"notifications"`
 	Oauth            UserConfigOAuthDto            `json:"oauth"`
 	PasswordLogin    UserConfigPasswordLoginDto    `json:"passwordLogin"`
 	ReverseGeocoding UserConfigReverseGeocodingDto `json:"reverseGeocoding"`
 	Server           UserConfigServerDto           `json:"server"`
-	Theme            UserConfigThemeDto            `json:"theme"`
 	Trash            UserConfigTrashDto            `json:"trash"`
 	User             UserConfigUserDto             `json:"user"`
 }
@@ -7269,6 +7510,11 @@ type UserConfigMapDto struct {
 	LightStyle string `json:"lightStyle"`
 }
 
+// UserConfigNotificationsDto defines model for UserConfigNotificationsDto.
+type UserConfigNotificationsDto struct {
+	Smtp UserConfigSmtpDto `json:"smtp"`
+}
+
 // UserConfigOAuthDto defines model for UserConfigOAuthDto.
 type UserConfigOAuthDto struct {
 	// AutoLaunch Auto launch
@@ -7311,10 +7557,10 @@ type UserConfigServerDto struct {
 	PublicUsers bool `json:"publicUsers"`
 }
 
-// UserConfigThemeDto defines model for UserConfigThemeDto.
-type UserConfigThemeDto struct {
-	// CustomCss Custom CSS for theming
-	CustomCss string `json:"customCss"`
+// UserConfigSmtpDto defines model for UserConfigSmtpDto.
+type UserConfigSmtpDto struct {
+	// Enabled Whether SMTP email notifications are enabled
+	Enabled bool `json:"enabled"`
 }
 
 // UserConfigTrashDto defines model for UserConfigTrashDto.
@@ -7926,14 +8172,46 @@ type GetAllPeopleParams struct {
 	// ClosestPersonId Closest person ID for similarity search
 	ClosestPersonId *openapi_types.UUID `form:"closestPersonId,omitempty" json:"closestPersonId,omitempty"`
 
+	// IsFavorite Filter by favorite status
+	IsFavorite *bool `form:"isFavorite,omitempty" json:"isFavorite,omitempty"`
+
+	// IsHidden Filter by hidden status
+	IsHidden *bool `form:"isHidden,omitempty" json:"isHidden,omitempty"`
+
+	// Name Filter by person name
+	Name *string `form:"name,omitempty" json:"name,omitempty"`
+
 	// Page Page number for pagination
 	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// SharedById Only include people to which the user gave access
+	SharedById *openapi_types.UUID `form:"sharedById,omitempty" json:"sharedById,omitempty"`
+
+	// SharedWithId Only include people to which the user was given access
+	SharedWithId *openapi_types.UUID `form:"sharedWithId,omitempty" json:"sharedWithId,omitempty"`
 
 	// Size Number of items per page
 	Size *int `form:"size,omitempty" json:"size,omitempty"`
 
 	// WithHidden Include hidden people
 	WithHidden *bool `form:"withHidden,omitempty" json:"withHidden,omitempty"`
+}
+
+// GetUsersForPeopleParams defines parameters for GetUsersForPeople.
+type GetUsersForPeopleParams struct {
+	Direction *SharingDirection `form:"direction,omitempty" json:"direction,omitempty"`
+
+	// PersonId Person ID
+	PersonId *openapi_types.UUID `form:"personId,omitempty" json:"personId,omitempty"`
+
+	// Role Role of user
+	Role *PersonUserRole `form:"role,omitempty" json:"role,omitempty"`
+
+	// SharedById User ID of the user that gave access
+	SharedById *openapi_types.UUID `form:"sharedById,omitempty" json:"sharedById,omitempty"`
+
+	// SharedWithId User ID of the user that was given access
+	SharedWithId *openapi_types.UUID `form:"sharedWithId,omitempty" json:"sharedWithId,omitempty"`
 }
 
 // SearchPluginsParams defines parameters for SearchPlugins.
@@ -8344,13 +8622,9 @@ type CreateUserAdminJSONRequestBody = UserAdminCreateDto
 type DeleteUserAdminJSONRequestBody = UserAdminDeleteDto
 
 // UpdateUserAdminJSONRequestBody defines body for UpdateUserAdmin for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateUserAdminJSONRequestBody = UserAdminUpdateDto
 
 // UpdateUserPreferencesAdminJSONRequestBody defines body for UpdateUserPreferencesAdmin for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateUserPreferencesAdminJSONRequestBody = UserPreferencesUpdateDto
 
 // CreateAlbumJSONRequestBody defines body for CreateAlbum for application/json ContentType.
@@ -8378,8 +8652,6 @@ type AddUsersToAlbumJSONRequestBody = AddUsersDto
 type CreateApiKeyJSONRequestBody = ApiKeyCreateDto
 
 // UpdateApiKeyJSONRequestBody defines body for UpdateApiKey for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateApiKeyJSONRequestBody = ApiKeyUpdateDto
 
 // DeleteAssetsJSONRequestBody defines body for DeleteAssets for application/json ContentType.
@@ -8389,8 +8661,6 @@ type DeleteAssetsJSONRequestBody = AssetBulkDeleteDto
 type UploadAssetMultipartRequestBody = AssetMediaCreateDto
 
 // UpdateAssetsJSONRequestBody defines body for UpdateAssets for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateAssetsJSONRequestBody = AssetBulkUpdateDto
 
 // CheckBulkUploadJSONRequestBody defines body for CheckBulkUpload for application/json ContentType.
@@ -8409,8 +8679,6 @@ type DeleteBulkAssetMetadataJSONRequestBody = AssetMetadataBulkDeleteDto
 type UpdateBulkAssetMetadataJSONRequestBody = AssetMetadataBulkUpsertDto
 
 // UpdateAssetJSONRequestBody defines body for UpdateAsset for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateAssetJSONRequestBody = UpdateAssetDto
 
 // EditAssetJSONRequestBody defines body for EditAsset for application/json ContentType.
@@ -8476,8 +8744,6 @@ type RunQueueCommandLegacyJSONRequestBody = QueueCommandDto
 type CreateLibraryJSONRequestBody = CreateLibraryDto
 
 // UpdateLibraryJSONRequestBody defines body for UpdateLibrary for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateLibraryJSONRequestBody = UpdateLibraryDto
 
 // ValidateJSONRequestBody defines body for Validate for application/json ContentType.
@@ -8487,8 +8753,6 @@ type ValidateJSONRequestBody = ValidateLibraryDto
 type CreateMemoryJSONRequestBody = MemoryCreateDto
 
 // UpdateMemoryJSONRequestBody defines body for UpdateMemory for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateMemoryJSONRequestBody = MemoryUpdateDto
 
 // RemoveMemoryAssetsJSONRequestBody defines body for RemoveMemoryAssets for application/json ContentType.
@@ -8525,7 +8789,7 @@ type CreatePartnerJSONRequestBody = PartnerCreateDto
 type UpdatePartnerJSONRequestBody = PartnerUpdateDto
 
 // DeletePeopleJSONRequestBody defines body for DeletePeople for application/json ContentType.
-type DeletePeopleJSONRequestBody = BulkIdsDto
+type DeletePeopleJSONRequestBody = PeopleDeleteDto
 
 // CreatePersonJSONRequestBody defines body for CreatePerson for application/json ContentType.
 type CreatePersonJSONRequestBody = PersonCreateDto
@@ -8536,9 +8800,16 @@ type UpdatePeopleJSONRequestBody = PeopleUpdateDto
 // MergePeopleJSONRequestBody defines body for MergePeople for application/json ContentType.
 type MergePeopleJSONRequestBody = MergePersonDto
 
+// RemoveUsersFromPeopleJSONRequestBody defines body for RemoveUsersFromPeople for application/json ContentType.
+type RemoveUsersFromPeopleJSONRequestBody = PersonUsersDeleteDto
+
+// UpsertPeopleUsersJSONRequestBody defines body for UpsertPeopleUsers for application/json ContentType.
+type UpsertPeopleUsersJSONRequestBody = PeopleUsersUpsertDto
+
+// DeletePersonJSONRequestBody defines body for DeletePerson for application/json ContentType.
+type DeletePersonJSONRequestBody = PersonDeleteDto
+
 // UpdatePersonJSONRequestBody defines body for UpdatePerson for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdatePersonJSONRequestBody = PersonUpdateDto
 
 // MergePersonLegacyJSONRequestBody defines body for MergePersonLegacy for application/json ContentType.
@@ -8574,8 +8845,6 @@ type SetServerLicenseJSONRequestBody = LicenseKeyDto
 type CreateSessionJSONRequestBody = SessionCreateDto
 
 // UpdateSessionJSONRequestBody defines body for UpdateSession for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateSessionJSONRequestBody = SessionUpdateDto
 
 // CreateSharedLinkJSONRequestBody defines body for CreateSharedLink for application/json ContentType.
@@ -8600,8 +8869,6 @@ type DeleteStacksJSONRequestBody = BulkIdsDto
 type CreateStackJSONRequestBody = StackCreateDto
 
 // UpdateStackJSONRequestBody defines body for UpdateStack for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateStackJSONRequestBody = StackUpdateDto
 
 // DeleteSyncAckJSONRequestBody defines body for DeleteSyncAck for application/json ContentType.
@@ -8631,8 +8898,6 @@ type UpsertTagsJSONRequestBody = TagUpsertDto
 type BulkTagAssetsJSONRequestBody = TagBulkAssetsDto
 
 // UpdateTagJSONRequestBody defines body for UpdateTag for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateTagJSONRequestBody = TagUpdateDto
 
 // UntagAssetsJSONRequestBody defines body for UntagAssets for application/json ContentType.
@@ -8645,8 +8910,6 @@ type TagAssetsJSONRequestBody = BulkIdsDto
 type RestoreAssetsJSONRequestBody = BulkIdsDto
 
 // UpdateMyUserJSONRequestBody defines body for UpdateMyUser for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateMyUserJSONRequestBody = UserUpdateMeDto
 
 // SetUserLicenseJSONRequestBody defines body for SetUserLicense for application/json ContentType.
@@ -8656,8 +8919,6 @@ type SetUserLicenseJSONRequestBody = LicenseKeyDto
 type SetUserOnboardingJSONRequestBody = OnboardingDto
 
 // UpdateMyPreferencesJSONRequestBody defines body for UpdateMyPreferences for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateMyPreferencesJSONRequestBody = UserPreferencesUpdateDto
 
 // CreateProfileImageMultipartRequestBody defines body for CreateProfileImage for multipart/form-data ContentType.
@@ -8667,8 +8928,6 @@ type CreateProfileImageMultipartRequestBody = CreateProfileImageDto
 type CreateWorkflowJSONRequestBody = WorkflowCreateDto
 
 // UpdateWorkflowJSONRequestBody defines body for UpdateWorkflow for application/json ContentType.
-//
-// Deprecated: this type has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 type UpdateWorkflowJSONRequestBody = WorkflowUpdateDto
 
 // AsCropParameters returns the union data inside the AssetEditActionItemDto_Parameters as a CropParameters
@@ -9243,8 +9502,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /admin/users/{id} (the `UpdateUserAdmin` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateUserAdminWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateUserAdmin Update a user
@@ -9254,8 +9511,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /admin/users/{id} (the `UpdateUserAdmin` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateUserAdmin(ctx context.Context, id openapi_types.UUID, body UpdateUserAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetUserCalendarHeatmapAdmin Retrieve calendar heatmap activity
@@ -9279,8 +9534,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /admin/users/{id}/preferences (the `UpdateUserPreferencesAdmin` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateUserPreferencesAdminWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateUserPreferencesAdmin Update user preferences
@@ -9290,8 +9543,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /admin/users/{id}/preferences (the `UpdateUserPreferencesAdmin` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateUserPreferencesAdmin(ctx context.Context, id openapi_types.UUID, body UpdateUserPreferencesAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RestoreUserAdmin Restore a deleted user
@@ -9536,8 +9787,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /api-keys/{id} (the `UpdateApiKey` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateApiKeyWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateApiKey Update an API key
@@ -9547,8 +9796,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /api-keys/{id} (the `UpdateApiKey` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateApiKey(ctx context.Context, id openapi_types.UUID, body UpdateApiKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RotateApiKey Rotate an API key
@@ -9620,8 +9867,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /assets (the `UpdateAssets` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateAssetsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateAssets Update assets
@@ -9631,8 +9876,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /assets (the `UpdateAssets` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateAssets(ctx context.Context, body UpdateAssetsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CheckBulkUploadWithBody Check bulk upload
@@ -9746,8 +9989,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /assets/{id} (the `UpdateAsset` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateAssetWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateAsset Update an asset
@@ -9757,8 +9998,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /assets/{id} (the `UpdateAsset` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateAsset(ctx context.Context, id openapi_types.UUID, body UpdateAssetJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RemoveAssetEdits Remove edits from an existing asset
@@ -10365,8 +10604,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /libraries/{id} (the `UpdateLibrary` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateLibraryWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateLibrary Update a library
@@ -10376,8 +10613,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /libraries/{id} (the `UpdateLibrary` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateLibrary(ctx context.Context, id openapi_types.UUID, body UpdateLibraryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ScanLibrary Scan a library
@@ -10479,8 +10714,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /memories/{id} (the `UpdateMemory` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMemoryWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateMemory Update a memory
@@ -10490,8 +10723,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /memories/{id} (the `UpdateMemory` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMemory(ctx context.Context, id openapi_types.UUID, body UpdateMemoryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RemoveMemoryAssetsWithBody Remove assets from a memory
@@ -10829,12 +11060,66 @@ type ClientInterface interface {
 	// Corresponds with POST /people/merge (the `MergePeople` operationId).
 	MergePeople(ctx context.Context, body MergePeopleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// RemoveUsersFromPeopleWithBody Remove users from people
+	//
+	// Remove user access to people.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with DELETE /people/users (the `RemoveUsersFromPeople` operationId).
+	RemoveUsersFromPeopleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveUsersFromPeople Remove users from people
+	//
+	// Remove user access to people.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with DELETE /people/users (the `RemoveUsersFromPeople` operationId).
+	RemoveUsersFromPeople(ctx context.Context, body RemoveUsersFromPeopleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetUsersForPeople Get people access
+	//
+	// Retrieve a list of users and the people to which they have been given access.
+	//
+	// Corresponds with GET /people/users (the `GetUsersForPeople` operationId).
+	GetUsersForPeople(ctx context.Context, params *GetUsersForPeopleParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpsertPeopleUsersWithBody Upsert user access
+	//
+	// Give users access to people.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /people/users (the `UpsertPeopleUsers` operationId).
+	UpsertPeopleUsersWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpsertPeopleUsers Upsert user access
+	//
+	// Give users access to people.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /people/users (the `UpsertPeopleUsers` operationId).
+	UpsertPeopleUsers(ctx context.Context, body UpsertPeopleUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeletePersonWithBody Delete person
+	//
+	// Delete an individual person.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with DELETE /people/{id} (the `DeletePerson` operationId).
+	DeletePersonWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeletePerson Delete person
 	//
 	// Delete an individual person.
 	//
+	// Takes a body of the `application/json` content type.
+	//
 	// Corresponds with DELETE /people/{id} (the `DeletePerson` operationId).
-	DeletePerson(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeletePerson(ctx context.Context, id openapi_types.UUID, body DeletePersonJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetPerson Get a person
 	//
@@ -10850,8 +11135,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /people/{id} (the `UpdatePerson` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdatePersonWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdatePerson Update person
@@ -10861,8 +11144,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /people/{id} (the `UpdatePerson` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdatePerson(ctx context.Context, id openapi_types.UUID, body UpdatePersonJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// MergePersonLegacyWithBody Merge people
@@ -11293,8 +11574,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /sessions/{id} (the `UpdateSession` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateSessionWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateSession Update a session
@@ -11304,8 +11583,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /sessions/{id} (the `UpdateSession` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateSession(ctx context.Context, id openapi_types.UUID, body UpdateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// LockSession Lock a session
@@ -11497,8 +11774,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /stacks/{id} (the `UpdateStack` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateStackWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateStack Update a stack
@@ -11508,8 +11783,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /stacks/{id} (the `UpdateStack` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateStack(ctx context.Context, id openapi_types.UUID, body UpdateStackJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// RemoveAssetFromStack Remove an asset from a stack
@@ -11748,8 +12021,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /tags/{id} (the `UpdateTag` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateTagWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateTag Update a tag
@@ -11759,8 +12030,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /tags/{id} (the `UpdateTag` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateTag(ctx context.Context, id openapi_types.UUID, body UpdateTagJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UntagAssetsWithBody Untag assets
@@ -11866,8 +12135,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /users/me (the `UpdateMyUser` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMyUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateMyUser Update current user
@@ -11877,8 +12144,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /users/me (the `UpdateMyUser` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMyUser(ctx context.Context, body UpdateMyUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetMyCalendarHeatmap Retrieve calendar heatmap activity
@@ -11966,8 +12231,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /users/me/preferences (the `UpdateMyPreferences` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMyPreferencesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateMyPreferences Update my preferences
@@ -11977,8 +12240,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /users/me/preferences (the `UpdateMyPreferences` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMyPreferences(ctx context.Context, body UpdateMyPreferencesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteProfileImage Delete user profile image
@@ -12078,8 +12339,6 @@ type ClientInterface interface {
 	// Takes any type of body and a specified content type.
 	//
 	// Corresponds with PUT /workflows/{id} (the `UpdateWorkflow` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateWorkflowWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateWorkflow Update a workflow
@@ -12089,8 +12348,6 @@ type ClientInterface interface {
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with PUT /workflows/{id} (the `UpdateWorkflow` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateWorkflow(ctx context.Context, id openapi_types.UUID, body UpdateWorkflowJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetWorkflowLogs Retrieve workflow logs
@@ -12820,7 +13077,6 @@ func (c *Client) GetUserAdmin(ctx context.Context, id openapi_types.UUID, reqEdi
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /admin/users/{id} (the `UpdateUserAdmin` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateUserAdminWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateUserAdminRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -12840,7 +13096,6 @@ func (c *Client) UpdateUserAdminWithBody(ctx context.Context, id openapi_types.U
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /admin/users/{id} (the `UpdateUserAdmin` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateUserAdmin(ctx context.Context, id openapi_types.UUID, body UpdateUserAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateUserAdminRequest(c.Server, id, body)
 	if err != nil {
@@ -12894,7 +13149,6 @@ func (c *Client) GetUserPreferencesAdmin(ctx context.Context, id openapi_types.U
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /admin/users/{id}/preferences (the `UpdateUserPreferencesAdmin` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateUserPreferencesAdminWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateUserPreferencesAdminRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -12914,7 +13168,6 @@ func (c *Client) UpdateUserPreferencesAdminWithBody(ctx context.Context, id open
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /admin/users/{id}/preferences (the `UpdateUserPreferencesAdmin` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateUserPreferencesAdmin(ctx context.Context, id openapi_types.UUID, body UpdateUserPreferencesAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateUserPreferencesAdminRequest(c.Server, id, body)
 	if err != nil {
@@ -13459,7 +13712,6 @@ func (c *Client) GetApiKey(ctx context.Context, id openapi_types.UUID, reqEditor
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /api-keys/{id} (the `UpdateApiKey` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateApiKeyWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateApiKeyRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -13479,7 +13731,6 @@ func (c *Client) UpdateApiKeyWithBody(ctx context.Context, id openapi_types.UUID
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /api-keys/{id} (the `UpdateApiKey` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateApiKey(ctx context.Context, id openapi_types.UUID, body UpdateApiKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateApiKeyRequest(c.Server, id, body)
 	if err != nil {
@@ -13641,7 +13892,6 @@ func (c *Client) UploadAssetWithBody(ctx context.Context, params *UploadAssetPar
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /assets (the `UpdateAssets` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateAssetsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateAssetsRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -13661,7 +13911,6 @@ func (c *Client) UpdateAssetsWithBody(ctx context.Context, contentType string, b
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /assets (the `UpdateAssets` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateAssets(ctx context.Context, body UpdateAssetsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateAssetsRequest(c.Server, body)
 	if err != nil {
@@ -13905,7 +14154,6 @@ func (c *Client) GetAssetInfo(ctx context.Context, id openapi_types.UUID, params
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /assets/{id} (the `UpdateAsset` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateAssetWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateAssetRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -13925,7 +14173,6 @@ func (c *Client) UpdateAssetWithBody(ctx context.Context, id openapi_types.UUID,
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /assets/{id} (the `UpdateAsset` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateAsset(ctx context.Context, id openapi_types.UUID, body UpdateAssetJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateAssetRequest(c.Server, id, body)
 	if err != nil {
@@ -15269,7 +15516,6 @@ func (c *Client) GetLibrary(ctx context.Context, id openapi_types.UUID, reqEdito
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /libraries/{id} (the `UpdateLibrary` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateLibraryWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateLibraryRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -15289,7 +15535,6 @@ func (c *Client) UpdateLibraryWithBody(ctx context.Context, id openapi_types.UUI
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /libraries/{id} (the `UpdateLibrary` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateLibrary(ctx context.Context, id openapi_types.UUID, body UpdateLibraryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateLibraryRequest(c.Server, id, body)
 	if err != nil {
@@ -15521,7 +15766,6 @@ func (c *Client) GetMemory(ctx context.Context, id openapi_types.UUID, reqEditor
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /memories/{id} (the `UpdateMemory` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateMemoryWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateMemoryRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -15541,7 +15785,6 @@ func (c *Client) UpdateMemoryWithBody(ctx context.Context, id openapi_types.UUID
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /memories/{id} (the `UpdateMemory` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateMemory(ctx context.Context, id openapi_types.UUID, body UpdateMemoryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateMemoryRequest(c.Server, id, body)
 	if err != nil {
@@ -16278,13 +16521,127 @@ func (c *Client) MergePeople(ctx context.Context, body MergePeopleJSONRequestBod
 	return c.Client.Do(req)
 }
 
+// RemoveUsersFromPeopleWithBody Remove users from people
+//
+// Remove user access to people.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with DELETE /people/users (the `RemoveUsersFromPeople` operationId).
+func (c *Client) RemoveUsersFromPeopleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveUsersFromPeopleRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RemoveUsersFromPeople Remove users from people
+//
+// Remove user access to people.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with DELETE /people/users (the `RemoveUsersFromPeople` operationId).
+func (c *Client) RemoveUsersFromPeople(ctx context.Context, body RemoveUsersFromPeopleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveUsersFromPeopleRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetUsersForPeople Get people access
+//
+// Retrieve a list of users and the people to which they have been given access.
+//
+// Corresponds with GET /people/users (the `GetUsersForPeople` operationId).
+func (c *Client) GetUsersForPeople(ctx context.Context, params *GetUsersForPeopleParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetUsersForPeopleRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpsertPeopleUsersWithBody Upsert user access
+//
+// Give users access to people.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /people/users (the `UpsertPeopleUsers` operationId).
+func (c *Client) UpsertPeopleUsersWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpsertPeopleUsersRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpsertPeopleUsers Upsert user access
+//
+// Give users access to people.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /people/users (the `UpsertPeopleUsers` operationId).
+func (c *Client) UpsertPeopleUsers(ctx context.Context, body UpsertPeopleUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpsertPeopleUsersRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeletePersonWithBody Delete person
+//
+// Delete an individual person.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with DELETE /people/{id} (the `DeletePerson` operationId).
+func (c *Client) DeletePersonWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeletePersonRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // DeletePerson Delete person
 //
 // Delete an individual person.
 //
+// Takes a body of the `application/json` content type.
+//
 // Corresponds with DELETE /people/{id} (the `DeletePerson` operationId).
-func (c *Client) DeletePerson(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeletePersonRequest(c.Server, id)
+func (c *Client) DeletePerson(ctx context.Context, id openapi_types.UUID, body DeletePersonJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeletePersonRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -16319,7 +16676,6 @@ func (c *Client) GetPerson(ctx context.Context, id openapi_types.UUID, reqEditor
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /people/{id} (the `UpdatePerson` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdatePersonWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdatePersonRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -16339,7 +16695,6 @@ func (c *Client) UpdatePersonWithBody(ctx context.Context, id openapi_types.UUID
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /people/{id} (the `UpdatePerson` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdatePerson(ctx context.Context, id openapi_types.UUID, body UpdatePersonJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdatePersonRequest(c.Server, id, body)
 	if err != nil {
@@ -17305,7 +17660,6 @@ func (c *Client) DeleteSession(ctx context.Context, id openapi_types.UUID, reqEd
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /sessions/{id} (the `UpdateSession` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateSessionWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateSessionRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -17325,7 +17679,6 @@ func (c *Client) UpdateSessionWithBody(ctx context.Context, id openapi_types.UUI
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /sessions/{id} (the `UpdateSession` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateSession(ctx context.Context, id openapi_types.UUID, body UpdateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateSessionRequest(c.Server, id, body)
 	if err != nil {
@@ -17747,7 +18100,6 @@ func (c *Client) GetStack(ctx context.Context, id openapi_types.UUID, reqEditors
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /stacks/{id} (the `UpdateStack` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateStackWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateStackRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -17767,7 +18119,6 @@ func (c *Client) UpdateStackWithBody(ctx context.Context, id openapi_types.UUID,
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /stacks/{id} (the `UpdateStack` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateStack(ctx context.Context, id openapi_types.UUID, body UpdateStackJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateStackRequest(c.Server, id, body)
 	if err != nil {
@@ -18282,7 +18633,6 @@ func (c *Client) GetTagById(ctx context.Context, id openapi_types.UUID, reqEdito
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /tags/{id} (the `UpdateTag` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateTagWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateTagRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -18302,7 +18652,6 @@ func (c *Client) UpdateTagWithBody(ctx context.Context, id openapi_types.UUID, c
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /tags/{id} (the `UpdateTag` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateTag(ctx context.Context, id openapi_types.UUID, body UpdateTagJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateTagRequest(c.Server, id, body)
 	if err != nil {
@@ -18538,7 +18887,6 @@ func (c *Client) GetMyUser(ctx context.Context, reqEditors ...RequestEditorFn) (
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /users/me (the `UpdateMyUser` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateMyUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateMyUserRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -18558,7 +18906,6 @@ func (c *Client) UpdateMyUserWithBody(ctx context.Context, contentType string, b
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /users/me (the `UpdateMyUser` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateMyUser(ctx context.Context, body UpdateMyUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateMyUserRequest(c.Server, body)
 	if err != nil {
@@ -18756,7 +19103,6 @@ func (c *Client) GetMyPreferences(ctx context.Context, reqEditors ...RequestEdit
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /users/me/preferences (the `UpdateMyPreferences` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateMyPreferencesWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateMyPreferencesRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -18776,7 +19122,6 @@ func (c *Client) UpdateMyPreferencesWithBody(ctx context.Context, contentType st
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /users/me/preferences (the `UpdateMyPreferences` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateMyPreferences(ctx context.Context, body UpdateMyPreferencesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateMyPreferencesRequest(c.Server, body)
 	if err != nil {
@@ -19006,7 +19351,6 @@ func (c *Client) GetWorkflow(ctx context.Context, id openapi_types.UUID, reqEdit
 // Takes any type of body and a specified content type.
 //
 // Corresponds with PUT /workflows/{id} (the `UpdateWorkflow` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateWorkflowWithBody(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateWorkflowRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -19026,7 +19370,6 @@ func (c *Client) UpdateWorkflowWithBody(ctx context.Context, id openapi_types.UU
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with PUT /workflows/{id} (the `UpdateWorkflow` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *Client) UpdateWorkflow(ctx context.Context, id openapi_types.UUID, body UpdateWorkflowJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateWorkflowRequest(c.Server, id, body)
 	if err != nil {
@@ -26340,9 +26683,69 @@ func NewGetAllPeopleRequest(server string, params *GetAllPeopleParams) (*http.Re
 
 		}
 
+		if params.IsFavorite != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "isFavorite", *params.IsFavorite, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.IsHidden != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "isHidden", *params.IsHidden, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Name != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
 		if params.Page != nil {
 
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.SharedById != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "sharedById", *params.SharedById, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.SharedWithId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "sharedWithId", *params.SharedWithId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "uuid"}); err != nil {
 				return nil, err
 			} else {
 				for _, qp := range strings.Split(queryFrag, "&") {
@@ -26510,8 +26913,201 @@ func NewMergePeopleRequestWithBody(server string, contentType string, body io.Re
 	return req, nil
 }
 
-// NewDeletePersonRequest constructs an http.Request for the DeletePerson method
-func NewDeletePersonRequest(server string, id openapi_types.UUID) (*http.Request, error) {
+// NewRemoveUsersFromPeopleRequest calls the generic RemoveUsersFromPeople builder with application/json body
+func NewRemoveUsersFromPeopleRequest(server string, body RemoveUsersFromPeopleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRemoveUsersFromPeopleRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewRemoveUsersFromPeopleRequestWithBody constructs an http.Request for the RemoveUsersFromPeople method, with any body, and a specified content type
+func NewRemoveUsersFromPeopleRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/people/users")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetUsersForPeopleRequest constructs an http.Request for the GetUsersForPeople method
+func NewGetUsersForPeopleRequest(server string, params *GetUsersForPeopleParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/people/users")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Direction != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "direction", *params.Direction, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.PersonId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "personId", *params.PersonId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Role != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "role", *params.Role, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.SharedById != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "sharedById", *params.SharedById, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.SharedWithId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "sharedWithId", *params.SharedWithId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: "uuid"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpsertPeopleUsersRequest calls the generic UpsertPeopleUsers builder with application/json body
+func NewUpsertPeopleUsersRequest(server string, body UpsertPeopleUsersJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpsertPeopleUsersRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewUpsertPeopleUsersRequestWithBody constructs an http.Request for the UpsertPeopleUsers method, with any body, and a specified content type
+func NewUpsertPeopleUsersRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/people/users")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeletePersonRequest calls the generic DeletePerson builder with application/json body
+func NewDeletePersonRequest(server string, id openapi_types.UUID, body DeletePersonJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewDeletePersonRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewDeletePersonRequestWithBody constructs an http.Request for the DeletePerson method, with any body, and a specified content type
+func NewDeletePersonRequestWithBody(server string, id openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -26536,10 +27132,12 @@ func NewDeletePersonRequest(server string, id openapi_types.UUID) (*http.Request
 		return nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -32369,8 +32967,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /admin/users/{id} (the `UpdateUserAdmin` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateUserAdminWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateUserAdminResponse, error)
 
 	// UpdateUserAdminWithResponse Update a user
@@ -32380,8 +32976,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /admin/users/{id} (the `UpdateUserAdmin` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateUserAdminWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateUserAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateUserAdminResponse, error)
 
 	// GetUserCalendarHeatmapAdminWithResponse Retrieve calendar heatmap activity
@@ -32409,8 +33003,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /admin/users/{id}/preferences (the `UpdateUserPreferencesAdmin` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateUserPreferencesAdminWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateUserPreferencesAdminResponse, error)
 
 	// UpdateUserPreferencesAdminWithResponse Update user preferences
@@ -32420,8 +33012,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /admin/users/{id}/preferences (the `UpdateUserPreferencesAdmin` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateUserPreferencesAdminWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateUserPreferencesAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateUserPreferencesAdminResponse, error)
 
 	// RestoreUserAdminWithResponse Restore a deleted user
@@ -32692,8 +33282,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /api-keys/{id} (the `UpdateApiKey` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateApiKeyWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateApiKeyResponse, error)
 
 	// UpdateApiKeyWithResponse Update an API key
@@ -32703,8 +33291,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /api-keys/{id} (the `UpdateApiKey` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateApiKeyWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateApiKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateApiKeyResponse, error)
 
 	// RotateApiKeyWithResponse Rotate an API key
@@ -32786,8 +33372,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /assets (the `UpdateAssets` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateAssetsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAssetsResponse, error)
 
 	// UpdateAssetsWithResponse Update assets
@@ -32797,8 +33381,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /assets (the `UpdateAssets` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateAssetsWithResponse(ctx context.Context, body UpdateAssetsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAssetsResponse, error)
 
 	// CheckBulkUploadWithBodyWithResponse Check bulk upload
@@ -32916,8 +33498,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /assets/{id} (the `UpdateAsset` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateAssetWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAssetResponse, error)
 
 	// UpdateAssetWithResponse Update an asset
@@ -32927,8 +33507,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /assets/{id} (the `UpdateAsset` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateAssetWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateAssetJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAssetResponse, error)
 
 	// RemoveAssetEditsWithResponse Remove edits from an existing asset
@@ -33601,8 +34179,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /libraries/{id} (the `UpdateLibrary` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateLibraryWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateLibraryResponse, error)
 
 	// UpdateLibraryWithResponse Update a library
@@ -33612,8 +34188,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /libraries/{id} (the `UpdateLibrary` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateLibraryWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateLibraryJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateLibraryResponse, error)
 
 	// ScanLibraryWithResponse Scan a library
@@ -33731,8 +34305,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /memories/{id} (the `UpdateMemory` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMemoryWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMemoryResponse, error)
 
 	// UpdateMemoryWithResponse Update a memory
@@ -33742,8 +34314,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /memories/{id} (the `UpdateMemory` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMemoryWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateMemoryJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMemoryResponse, error)
 
 	// RemoveMemoryAssetsWithBodyWithResponse Remove assets from a memory
@@ -34099,14 +34669,68 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /people/merge (the `MergePeople` operationId).
 	MergePeopleWithResponse(ctx context.Context, body MergePeopleJSONRequestBody, reqEditors ...RequestEditorFn) (*MergePeopleResponse, error)
 
+	// RemoveUsersFromPeopleWithBodyWithResponse Remove users from people
+	//
+	// Remove user access to people.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /people/users (the `RemoveUsersFromPeople` operationId).
+	RemoveUsersFromPeopleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveUsersFromPeopleResponse, error)
+
+	// RemoveUsersFromPeopleWithResponse Remove users from people
+	//
+	// Remove user access to people.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /people/users (the `RemoveUsersFromPeople` operationId).
+	RemoveUsersFromPeopleWithResponse(ctx context.Context, body RemoveUsersFromPeopleJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveUsersFromPeopleResponse, error)
+
+	// GetUsersForPeopleWithResponse Get people access
+	//
+	// Retrieve a list of users and the people to which they have been given access.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /people/users (the `GetUsersForPeople` operationId).
+	GetUsersForPeopleWithResponse(ctx context.Context, params *GetUsersForPeopleParams, reqEditors ...RequestEditorFn) (*GetUsersForPeopleResponse, error)
+
+	// UpsertPeopleUsersWithBodyWithResponse Upsert user access
+	//
+	// Give users access to people.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /people/users (the `UpsertPeopleUsers` operationId).
+	UpsertPeopleUsersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpsertPeopleUsersResponse, error)
+
+	// UpsertPeopleUsersWithResponse Upsert user access
+	//
+	// Give users access to people.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /people/users (the `UpsertPeopleUsers` operationId).
+	UpsertPeopleUsersWithResponse(ctx context.Context, body UpsertPeopleUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*UpsertPeopleUsersResponse, error)
+
+	// DeletePersonWithBodyWithResponse Delete person
+	//
+	// Delete an individual person.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /people/{id} (the `DeletePerson` operationId).
+	DeletePersonWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeletePersonResponse, error)
+
 	// DeletePersonWithResponse Delete person
 	//
 	// Delete an individual person.
 	//
-	// Returns a wrapper object for the known response body format(s).
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with DELETE /people/{id} (the `DeletePerson` operationId).
-	DeletePersonWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeletePersonResponse, error)
+	DeletePersonWithResponse(ctx context.Context, id openapi_types.UUID, body DeletePersonJSONRequestBody, reqEditors ...RequestEditorFn) (*DeletePersonResponse, error)
 
 	// GetPersonWithResponse Get a person
 	//
@@ -34124,8 +34748,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /people/{id} (the `UpdatePerson` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdatePersonWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePersonResponse, error)
 
 	// UpdatePersonWithResponse Update person
@@ -34135,8 +34757,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /people/{id} (the `UpdatePerson` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdatePersonWithResponse(ctx context.Context, id openapi_types.UUID, body UpdatePersonJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdatePersonResponse, error)
 
 	// MergePersonLegacyWithBodyWithResponse Merge people
@@ -34633,8 +35253,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /sessions/{id} (the `UpdateSession` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateSessionWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSessionResponse, error)
 
 	// UpdateSessionWithResponse Update a session
@@ -34644,8 +35262,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /sessions/{id} (the `UpdateSession` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateSessionWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSessionResponse, error)
 
 	// LockSessionWithResponse Lock a session
@@ -34853,8 +35469,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /stacks/{id} (the `UpdateStack` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateStackWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateStackResponse, error)
 
 	// UpdateStackWithResponse Update a stack
@@ -34864,8 +35478,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /stacks/{id} (the `UpdateStack` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateStackWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateStackJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateStackResponse, error)
 
 	// RemoveAssetFromStackWithResponse Remove an asset from a stack
@@ -35126,8 +35738,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /tags/{id} (the `UpdateTag` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateTagWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTagResponse, error)
 
 	// UpdateTagWithResponse Update a tag
@@ -35137,8 +35747,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /tags/{id} (the `UpdateTag` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateTagWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateTagJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTagResponse, error)
 
 	// UntagAssetsWithBodyWithResponse Untag assets
@@ -35256,8 +35864,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /users/me (the `UpdateMyUser` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMyUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMyUserResponse, error)
 
 	// UpdateMyUserWithResponse Update current user
@@ -35267,8 +35873,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /users/me (the `UpdateMyUser` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMyUserWithResponse(ctx context.Context, body UpdateMyUserJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMyUserResponse, error)
 
 	// GetMyCalendarHeatmapWithResponse Retrieve calendar heatmap activity
@@ -35368,8 +35972,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /users/me/preferences (the `UpdateMyPreferences` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMyPreferencesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMyPreferencesResponse, error)
 
 	// UpdateMyPreferencesWithResponse Update my preferences
@@ -35379,8 +35981,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /users/me/preferences (the `UpdateMyPreferences` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateMyPreferencesWithResponse(ctx context.Context, body UpdateMyPreferencesJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMyPreferencesResponse, error)
 
 	// DeleteProfileImageWithResponse Delete user profile image
@@ -35498,8 +36098,6 @@ type ClientWithResponsesInterface interface {
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /workflows/{id} (the `UpdateWorkflow` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateWorkflowWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateWorkflowResponse, error)
 
 	// UpdateWorkflowWithResponse Update a workflow
@@ -35509,8 +36107,6 @@ type ClientWithResponsesInterface interface {
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with PUT /workflows/{id} (the `UpdateWorkflow` operationId).
-	//
-	// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 	UpdateWorkflowWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateWorkflowJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateWorkflowResponse, error)
 
 	// GetWorkflowLogsWithResponse Retrieve workflow logs
@@ -41714,6 +42310,115 @@ func (r MergePeopleResponse) ContentType() string {
 	return ""
 }
 
+type RemoveUsersFromPeopleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// GetBody returns the raw response body bytes
+func (r RemoveUsersFromPeopleResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r RemoveUsersFromPeopleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RemoveUsersFromPeopleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r RemoveUsersFromPeopleResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetUsersForPeopleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *PersonUsersResponseDto
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetUsersForPeopleResponse) GetJSON200() *PersonUsersResponseDto {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r GetUsersForPeopleResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetUsersForPeopleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetUsersForPeopleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetUsersForPeopleResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type UpsertPeopleUsersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// GetBody returns the raw response body bytes
+func (r UpsertPeopleUsersResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpsertPeopleUsersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpsertPeopleUsersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpsertPeopleUsersResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type DeletePersonResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -46915,8 +47620,6 @@ func (c *ClientWithResponses) GetUserAdminWithResponse(ctx context.Context, id o
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /admin/users/{id} (the `UpdateUserAdmin` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateUserAdminWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateUserAdminResponse, error) {
 	rsp, err := c.UpdateUserAdminWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -46932,7 +47635,6 @@ func (c *ClientWithResponses) UpdateUserAdminWithBodyWithResponse(ctx context.Co
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /admin/users/{id} (the `UpdateUserAdmin` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateUserAdminWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateUserAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateUserAdminResponse, error) {
 	rsp, err := c.UpdateUserAdmin(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -46978,8 +47680,6 @@ func (c *ClientWithResponses) GetUserPreferencesAdminWithResponse(ctx context.Co
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /admin/users/{id}/preferences (the `UpdateUserPreferencesAdmin` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateUserPreferencesAdminWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateUserPreferencesAdminResponse, error) {
 	rsp, err := c.UpdateUserPreferencesAdminWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -46995,7 +47695,6 @@ func (c *ClientWithResponses) UpdateUserPreferencesAdminWithBodyWithResponse(ctx
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /admin/users/{id}/preferences (the `UpdateUserPreferencesAdmin` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateUserPreferencesAdminWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateUserPreferencesAdminJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateUserPreferencesAdminResponse, error) {
 	rsp, err := c.UpdateUserPreferencesAdmin(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -47446,8 +48145,6 @@ func (c *ClientWithResponses) GetApiKeyWithResponse(ctx context.Context, id open
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /api-keys/{id} (the `UpdateApiKey` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateApiKeyWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateApiKeyResponse, error) {
 	rsp, err := c.UpdateApiKeyWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -47463,7 +48160,6 @@ func (c *ClientWithResponses) UpdateApiKeyWithBodyWithResponse(ctx context.Conte
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /api-keys/{id} (the `UpdateApiKey` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateApiKeyWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateApiKeyJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateApiKeyResponse, error) {
 	rsp, err := c.UpdateApiKey(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -47599,8 +48295,6 @@ func (c *ClientWithResponses) UploadAssetWithBodyWithResponse(ctx context.Contex
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /assets (the `UpdateAssets` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateAssetsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAssetsResponse, error) {
 	rsp, err := c.UpdateAssetsWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
@@ -47616,7 +48310,6 @@ func (c *ClientWithResponses) UpdateAssetsWithBodyWithResponse(ctx context.Conte
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /assets (the `UpdateAssets` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateAssetsWithResponse(ctx context.Context, body UpdateAssetsJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAssetsResponse, error) {
 	rsp, err := c.UpdateAssets(ctx, body, reqEditors...)
 	if err != nil {
@@ -47812,8 +48505,6 @@ func (c *ClientWithResponses) GetAssetInfoWithResponse(ctx context.Context, id o
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /assets/{id} (the `UpdateAsset` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateAssetWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAssetResponse, error) {
 	rsp, err := c.UpdateAssetWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -47829,7 +48520,6 @@ func (c *ClientWithResponses) UpdateAssetWithBodyWithResponse(ctx context.Contex
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /assets/{id} (the `UpdateAsset` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateAssetWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateAssetJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAssetResponse, error) {
 	rsp, err := c.UpdateAsset(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -48945,8 +49635,6 @@ func (c *ClientWithResponses) GetLibraryWithResponse(ctx context.Context, id ope
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /libraries/{id} (the `UpdateLibrary` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateLibraryWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateLibraryResponse, error) {
 	rsp, err := c.UpdateLibraryWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -48962,7 +49650,6 @@ func (c *ClientWithResponses) UpdateLibraryWithBodyWithResponse(ctx context.Cont
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /libraries/{id} (the `UpdateLibrary` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateLibraryWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateLibraryJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateLibraryResponse, error) {
 	rsp, err := c.UpdateLibrary(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -49158,8 +49845,6 @@ func (c *ClientWithResponses) GetMemoryWithResponse(ctx context.Context, id open
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /memories/{id} (the `UpdateMemory` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateMemoryWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMemoryResponse, error) {
 	rsp, err := c.UpdateMemoryWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -49175,7 +49860,6 @@ func (c *ClientWithResponses) UpdateMemoryWithBodyWithResponse(ctx context.Conte
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /memories/{id} (the `UpdateMemory` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateMemoryWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateMemoryJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMemoryResponse, error) {
 	rsp, err := c.UpdateMemory(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -49771,15 +50455,105 @@ func (c *ClientWithResponses) MergePeopleWithResponse(ctx context.Context, body 
 	return ParseMergePeopleResponse(rsp)
 }
 
+// RemoveUsersFromPeopleWithBodyWithResponse Remove users from people
+//
+// Remove user access to people.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /people/users (the `RemoveUsersFromPeople` operationId).
+func (c *ClientWithResponses) RemoveUsersFromPeopleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RemoveUsersFromPeopleResponse, error) {
+	rsp, err := c.RemoveUsersFromPeopleWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveUsersFromPeopleResponse(rsp)
+}
+
+// RemoveUsersFromPeopleWithResponse Remove users from people
+//
+// Remove user access to people.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /people/users (the `RemoveUsersFromPeople` operationId).
+func (c *ClientWithResponses) RemoveUsersFromPeopleWithResponse(ctx context.Context, body RemoveUsersFromPeopleJSONRequestBody, reqEditors ...RequestEditorFn) (*RemoveUsersFromPeopleResponse, error) {
+	rsp, err := c.RemoveUsersFromPeople(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveUsersFromPeopleResponse(rsp)
+}
+
+// GetUsersForPeopleWithResponse Get people access
+//
+// Retrieve a list of users and the people to which they have been given access.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /people/users (the `GetUsersForPeople` operationId).
+func (c *ClientWithResponses) GetUsersForPeopleWithResponse(ctx context.Context, params *GetUsersForPeopleParams, reqEditors ...RequestEditorFn) (*GetUsersForPeopleResponse, error) {
+	rsp, err := c.GetUsersForPeople(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetUsersForPeopleResponse(rsp)
+}
+
+// UpsertPeopleUsersWithBodyWithResponse Upsert user access
+//
+// Give users access to people.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /people/users (the `UpsertPeopleUsers` operationId).
+func (c *ClientWithResponses) UpsertPeopleUsersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpsertPeopleUsersResponse, error) {
+	rsp, err := c.UpsertPeopleUsersWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpsertPeopleUsersResponse(rsp)
+}
+
+// UpsertPeopleUsersWithResponse Upsert user access
+//
+// Give users access to people.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /people/users (the `UpsertPeopleUsers` operationId).
+func (c *ClientWithResponses) UpsertPeopleUsersWithResponse(ctx context.Context, body UpsertPeopleUsersJSONRequestBody, reqEditors ...RequestEditorFn) (*UpsertPeopleUsersResponse, error) {
+	rsp, err := c.UpsertPeopleUsers(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpsertPeopleUsersResponse(rsp)
+}
+
+// DeletePersonWithBodyWithResponse Delete person
+//
+// Delete an individual person.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /people/{id} (the `DeletePerson` operationId).
+func (c *ClientWithResponses) DeletePersonWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeletePersonResponse, error) {
+	rsp, err := c.DeletePersonWithBody(ctx, id, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeletePersonResponse(rsp)
+}
+
 // DeletePersonWithResponse Delete person
 //
 // Delete an individual person.
 //
-// Returns a wrapper object for the known response body format(s).
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with DELETE /people/{id} (the `DeletePerson` operationId).
-func (c *ClientWithResponses) DeletePersonWithResponse(ctx context.Context, id openapi_types.UUID, reqEditors ...RequestEditorFn) (*DeletePersonResponse, error) {
-	rsp, err := c.DeletePerson(ctx, id, reqEditors...)
+func (c *ClientWithResponses) DeletePersonWithResponse(ctx context.Context, id openapi_types.UUID, body DeletePersonJSONRequestBody, reqEditors ...RequestEditorFn) (*DeletePersonResponse, error) {
+	rsp, err := c.DeletePerson(ctx, id, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -49808,8 +50582,6 @@ func (c *ClientWithResponses) GetPersonWithResponse(ctx context.Context, id open
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /people/{id} (the `UpdatePerson` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdatePersonWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePersonResponse, error) {
 	rsp, err := c.UpdatePersonWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -49825,7 +50597,6 @@ func (c *ClientWithResponses) UpdatePersonWithBodyWithResponse(ctx context.Conte
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /people/{id} (the `UpdatePerson` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdatePersonWithResponse(ctx context.Context, id openapi_types.UUID, body UpdatePersonJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdatePersonResponse, error) {
 	rsp, err := c.UpdatePerson(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -50645,8 +51416,6 @@ func (c *ClientWithResponses) DeleteSessionWithResponse(ctx context.Context, id 
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /sessions/{id} (the `UpdateSession` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateSessionWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateSessionResponse, error) {
 	rsp, err := c.UpdateSessionWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -50662,7 +51431,6 @@ func (c *ClientWithResponses) UpdateSessionWithBodyWithResponse(ctx context.Cont
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /sessions/{id} (the `UpdateSession` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateSessionWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateSessionJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSessionResponse, error) {
 	rsp, err := c.UpdateSession(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -51008,8 +51776,6 @@ func (c *ClientWithResponses) GetStackWithResponse(ctx context.Context, id opena
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /stacks/{id} (the `UpdateStack` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateStackWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateStackResponse, error) {
 	rsp, err := c.UpdateStackWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -51025,7 +51791,6 @@ func (c *ClientWithResponses) UpdateStackWithBodyWithResponse(ctx context.Contex
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /stacks/{id} (the `UpdateStack` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateStackWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateStackJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateStackResponse, error) {
 	rsp, err := c.UpdateStack(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -51453,8 +52218,6 @@ func (c *ClientWithResponses) GetTagByIdWithResponse(ctx context.Context, id ope
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /tags/{id} (the `UpdateTag` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateTagWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateTagResponse, error) {
 	rsp, err := c.UpdateTagWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -51470,7 +52233,6 @@ func (c *ClientWithResponses) UpdateTagWithBodyWithResponse(ctx context.Context,
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /tags/{id} (the `UpdateTag` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateTagWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateTagJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateTagResponse, error) {
 	rsp, err := c.UpdateTag(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -51666,8 +52428,6 @@ func (c *ClientWithResponses) GetMyUserWithResponse(ctx context.Context, reqEdit
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /users/me (the `UpdateMyUser` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateMyUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMyUserResponse, error) {
 	rsp, err := c.UpdateMyUserWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
@@ -51683,7 +52443,6 @@ func (c *ClientWithResponses) UpdateMyUserWithBodyWithResponse(ctx context.Conte
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /users/me (the `UpdateMyUser` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateMyUserWithResponse(ctx context.Context, body UpdateMyUserJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMyUserResponse, error) {
 	rsp, err := c.UpdateMyUser(ctx, body, reqEditors...)
 	if err != nil {
@@ -51849,8 +52608,6 @@ func (c *ClientWithResponses) GetMyPreferencesWithResponse(ctx context.Context, 
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /users/me/preferences (the `UpdateMyPreferences` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateMyPreferencesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMyPreferencesResponse, error) {
 	rsp, err := c.UpdateMyPreferencesWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
@@ -51866,7 +52623,6 @@ func (c *ClientWithResponses) UpdateMyPreferencesWithBodyWithResponse(ctx contex
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /users/me/preferences (the `UpdateMyPreferences` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateMyPreferencesWithResponse(ctx context.Context, body UpdateMyPreferencesJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMyPreferencesResponse, error) {
 	rsp, err := c.UpdateMyPreferences(ctx, body, reqEditors...)
 	if err != nil {
@@ -52062,8 +52818,6 @@ func (c *ClientWithResponses) GetWorkflowWithResponse(ctx context.Context, id op
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /workflows/{id} (the `UpdateWorkflow` operationId).
-//
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateWorkflowWithBodyWithResponse(ctx context.Context, id openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateWorkflowResponse, error) {
 	rsp, err := c.UpdateWorkflowWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -52079,7 +52833,6 @@ func (c *ClientWithResponses) UpdateWorkflowWithBodyWithResponse(ctx context.Con
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
 // Corresponds with PUT /workflows/{id} (the `UpdateWorkflow` operationId).
-// Deprecated: this operation has been marked as deprecated upstream, but no `x-deprecated-reason` was set
 func (c *ClientWithResponses) UpdateWorkflowWithResponse(ctx context.Context, id openapi_types.UUID, body UpdateWorkflowJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateWorkflowResponse, error) {
 	rsp, err := c.UpdateWorkflow(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -55730,6 +56483,64 @@ func ParseMergePeopleResponse(rsp *http.Response) (*MergePeopleResponse, error) 
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParseRemoveUsersFromPeopleResponse parses an HTTP response from a RemoveUsersFromPeopleWithResponse call
+func ParseRemoveUsersFromPeopleResponse(rsp *http.Response) (*RemoveUsersFromPeopleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RemoveUsersFromPeopleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseGetUsersForPeopleResponse parses an HTTP response from a GetUsersForPeopleWithResponse call
+func ParseGetUsersForPeopleResponse(rsp *http.Response) (*GetUsersForPeopleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetUsersForPeopleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest PersonUsersResponseDto
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpsertPeopleUsersResponse parses an HTTP response from a UpsertPeopleUsersWithResponse call
+func ParseUpsertPeopleUsersResponse(rsp *http.Response) (*UpsertPeopleUsersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpsertPeopleUsersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
 	}
 
 	return response, nil

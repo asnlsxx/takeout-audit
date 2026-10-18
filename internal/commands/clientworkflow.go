@@ -34,6 +34,7 @@ func ClientWorkflow() *cli.Command {
 			fmt.Fprintf(os.Stderr, "Unknown workflow %q. Run '%s --help' to see available workflows.\n", name, cmd.FullName())
 		},
 		Commands: []*cli.Command{
+			auditTakeoutCommand(),
 			replaceAssetCommand(),
 			tagDeleteCommand(),
 			addUsersToAlbumWithPatternCommand(),

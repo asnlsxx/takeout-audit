@@ -10,6 +10,14 @@ The `immich-admin` CLI manages an Immich photo server from the command line. Con
 
 Run `immich-admin <command path> --help` for full details and examples.
 
+## server
+
+Server information
+
+### server version
+
+Show server version (GET /server/version)
+
 ## assets
 
 Asset operations
@@ -276,6 +284,16 @@ Args: `[USER_ID ...]`
 
 Client-side multi-step workflows
 
+### client-workflow audit-takeout
+
+Audit every Takeout ZIP/directory entry against Immich catalog checksums; never upload or delete
+Args: `ZIP|DIR [ZIP|DIR ...]`
+- `--out` (string): NEW report directory, outside inputs; parent must exist [required]
+- `--inventory-only` (bool): offline scan with no config/API; media stays unknown and exit status is 2
+- `--max-entries` (int): maximum file entries across all inputs [default: 500000]
+- `--max-file-bytes` (int): maximum uncompressed bytes per file [default: 68719476736]
+- `--max-total-bytes` (int): maximum total uncompressed bytes read [default: 2199023255552]
+
 ### client-workflow replace-asset
 
 Replace an existing asset with a new file, keeping its metadata
@@ -461,6 +479,39 @@ Check for and install the latest release from GitHub
 
 
 ## Best practices
+
+### Takeout audit (experimental local extension)
+
+```sh
+# All ZIPs must come from the same export. Output is a NEW directory outside inputs.
+immich-admin cw audit-takeout --inventory-only --out inventory takeout-001.zip takeout-002.zip
+immich-admin --config config.staging.yaml cw audit-takeout --out audit takeout-001.zip takeout-002.zip
+immich-admin server version
+# Dedicated read-only executable (same workflow, no administrative commands):
+takeout-audit --inventory-only --out inventory2 takeout-001.zip takeout-002.zip
+```
+
+`--inventory-only` requires no config or network and deliberately exits 2:
+media has not been checked remotely. Online mode accepts stable 3.2.x only;
+the API key needs `user.read` and `asset.upload`, but a transport allowlist
+permits only account/version reads and POST `/assets/bulk-upload-check`.
+Contract tests use a mock server; live-server validation is still pending.
+No upload/delete/repair is part of this command, so no `--yes` is necessary.
+
+Read `summary.json` first, then `ledger.jsonl` (all entries) and `media.csv`.
+Source copies and unique content groups are different counts: `statuses` counts
+occurrences, `group_statuses` counts distinct contents, and
+`duplicate_media_copies` explains additional copies. Duplicate/overlapping input
+roots are rejected before media reads. Legacy path bytes are preserved in
+`path_raw_base64` if the ZIP name is not UTF-8. Exit 0 means a
+complete scoped catalog comparison, 1 means differences/attention, 2 means
+incomplete. `catalog_match` is not a disk-integrity or metadata guarantee;
+`not_matched` is not proof of loss. External libraries are outside scope.
+Never recommend deleting originals based on this report. The tool does not
+know whether all Google export parts were supplied. Limits default to 500,000
+entries, 64 GiB/file and 2 TiB total uncompressed bytes; hitting limits produces
+an incomplete report. Do not self-update this development build until the
+extension is available upstream. See `docs/takeout-audit.md` for release gates.
 
 ### Prerequisites
 
